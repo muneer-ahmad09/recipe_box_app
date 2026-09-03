@@ -11,7 +11,7 @@ class DashLines extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(
             20,
-            ((index) => Container(width: 8, height: 2, color: Colors.black12)),
+            ((index) => Container(width: 8, height: 2, color: Colors.black26)),
           ),
         );
       },

@@ -50,8 +50,8 @@ class _MainNavigationState extends State<MainNavigation> {
             label: "Search",
           ),
           NavigationDestination(
-            icon: Icon(Icons.add_box),
-            selectedIcon: Icon(Icons.add_box_outlined),
+            icon: Icon(Icons.add_box_outlined),
+            selectedIcon: Icon(Icons.add_box),
             label: "Add",
           ),
           NavigationDestination(

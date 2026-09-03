@@ -3,15 +3,17 @@ import 'package:recipe_box_app/widgets/dash_lines.dart';
 
 import '../../../core/theme/app_colors.dart';
 
-class HomePageCard extends StatelessWidget {
+class HomePageRecipeCard extends StatelessWidget {
 
+  final int id;
   final String title;
   final String cookName;
   final double rating;
   final String level;
 
-  const HomePageCard({
+  const HomePageRecipeCard({
     super.key,
+    required this.id,
     required this.title,
     required this.cookName,
     required this.rating,
@@ -40,9 +42,12 @@ class HomePageCard extends StatelessWidget {
                 padding: const EdgeInsets.only(left:8.0,right:8.0),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(25),
-                  child: Image.asset(
-                    'assets/images/vegeta.jpg',
-                    fit: BoxFit.cover,
+                  child: Hero(
+                    tag: "recipe-image-$id",
+                    child: Image.asset(
+                      'assets/images/vegeta.jpg',
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
@@ -76,16 +81,30 @@ class HomePageCard extends StatelessWidget {
               spacing: 5,
               children: [
                 Text(title,
-                  style:TextStyle(
+                  style:Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontSize: 20
-                  ) ,),
-                Text('by $cookName'),
+                  )),
+                Text('by $cookName',
+                style: Theme.of(context).textTheme.bodyMedium,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   spacing: 15,
                   children: [
                     Text(rating.toString()),
-                    Text(level)
+                    Container(
+                      padding: const EdgeInsets.only(right:7.0,left:7.0,top:2.0,bottom: 2.0),
+                      decoration: BoxDecoration(
+                        color: Colors.green[50],
+                        borderRadius: BorderRadiusGeometry.all(Radius.circular(20))
+                      ),
+                        child: Text(level,
+                        style: TextStyle(
+                          color: Colors.green[300],
+                          fontWeight: FontWeight.w500
+                        ),
+                        )
+                    )
                   ],
                 )
               ],
