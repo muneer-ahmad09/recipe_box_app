@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 class RecipeCheckBox extends StatefulWidget{
-  const RecipeCheckBox({super.key});
+  final String ingredient;
+  const RecipeCheckBox({
+    super.key,
+    required this.ingredient
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -11,6 +15,7 @@ class RecipeCheckBox extends StatefulWidget{
 
 class _RecipeCheckBoxState  extends State<RecipeCheckBox>{
   bool isChecked = false;
+  bool taskDone=false;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -22,10 +27,24 @@ class _RecipeCheckBoxState  extends State<RecipeCheckBox>{
           onChanged: (value) {
             setState(() {
               isChecked = value ?? false;
+              taskDone = !taskDone;
             });
           },
+          side: BorderSide(
+            width: 2.0
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
         ),
-        const Text("Enable feature"),
+        Text(
+          widget.ingredient,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            decoration: taskDone
+                ? TextDecoration.lineThrough
+                : TextDecoration.none,
+          ),
+        )
       ],
     );
   }

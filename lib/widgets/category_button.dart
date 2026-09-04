@@ -24,7 +24,7 @@ class CategoryButton extends StatelessWidget {
         minimumSize: const Size(0, 40),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: Colors.black, width: 1),
+          side: const BorderSide(color: Colors.black45, width: 1.5),
         ),
       ),
       child: Text(

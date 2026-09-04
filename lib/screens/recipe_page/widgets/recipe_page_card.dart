@@ -11,7 +11,7 @@ class RecipePageCard extends StatelessWidget{
   Widget build(BuildContext context) {
     return Container(
       width: 340,
-      height: 250,
+      height: 280,
       decoration: BoxDecoration(
         color: AppColors.cardWhite,
         borderRadius: BorderRadiusGeometry.all(Radius.circular(25)),
@@ -24,17 +24,24 @@ class RecipePageCard extends StatelessWidget{
         ]
       ),
       child: Padding(
-        padding: EdgeInsetsGeometry.all(15.0),
+        padding: EdgeInsetsGeometry.only(left:19.0,right:19.0),
         child: Column(
-          spacing: 15,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            DashLines(),
+            Padding(
+              padding: const EdgeInsets.only(top: 5.0),
+              child: DashLines(),
+            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Heading"),
-                Text("by Muneer Ahmad"),
+                Text("Brown Butter Miso Cookies",
+                  overflow: TextOverflow.clip,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontSize: 27
+                ),),
+                Text("by Muneer Ahmad",style: Theme.of(context).textTheme.bodyLarge,),
               ],
             ),
             Row(
@@ -55,12 +62,15 @@ class RecipePageCard extends StatelessWidget{
                       "35",
                       style: TextStyle(
                         fontSize: 20,
+                        color:Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       "min",
                       style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
                     ),
@@ -71,11 +81,11 @@ class RecipePageCard extends StatelessWidget{
                 Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("4.8 rating"),
+                    Text("4.8 rating",style: Theme.of(context).textTheme.bodyLarge),
                     Row(
                       children: [
                         Icon(Icons.analytics_outlined),
-                        Text("Easy")
+                        Text("Easy",style: Theme.of(context).textTheme.bodyLarge)
                       ],
                     )
                   ],
@@ -83,8 +93,8 @@ class RecipePageCard extends StatelessWidget{
               ],
             ),
             RecipeTabs()
-        
-        
+
+
           ],
         ),
       ),
