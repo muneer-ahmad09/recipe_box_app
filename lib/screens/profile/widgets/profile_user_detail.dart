@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_box_app/core/theme/app_colors.dart';
 import 'package:recipe_box_app/screens/profile/widgets/stat.dart';
 
 class ProfileUserDetail extends StatelessWidget {
@@ -12,7 +13,7 @@ class ProfileUserDetail extends StatelessWidget {
         vertical: 12,
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
             children: [
@@ -26,94 +27,72 @@ class ProfileUserDetail extends StatelessWidget {
                   color: Colors.white,
                 ),
               ),
-
               const SizedBox(width: 24),
-
-              // Stats
+              // User details
               Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: const [
-                    Stat(
-                      value: '42',
-                      label: 'Posts',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Muneer Ahmad',
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold
+                      )
                     ),
-                    Stat(
-                      value: '12.5K',
-                      label: 'Followers',
+                    Text(
+                      'Flutter Developer\n'
+                          'React Native • FastAPI • Spring Boot\n'
+                          'Building things that actually work 🚀',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontSize: 14.0
+                      )
                     ),
-                    Stat(
-                      value: '324',
-                      label: 'Following',
-                    ),
+
                   ],
-                ),
+
+                )
               ),
             ],
           ),
-
-          const SizedBox(height: 16),
-
-          const Text(
-            'Muneer Ahmad',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+          SizedBox(height: 25,),
+          Container(
+            width: 300,
+            decoration: BoxDecoration(
+              color: AppColors.cardWhite,
+              borderRadius: BorderRadius.circular(18),
+              border: BoxBorder.all(
+                color: Colors.grey,
+                width: 2,
+              )
             ),
-          ),
-
-          const SizedBox(height: 4),
-
-          const Text(
-            'Flutter Developer\n'
-                'React Native • FastAPI • Spring Boot\n'
-                'Building things that actually work 🚀',
-            style: TextStyle(
-              fontSize: 14,
-              height: 1.4,
-            ),
-          ),
-
-          const SizedBox(height: 14),
-
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text('Edit profile'),
-                ),
-              ),
-
-              const SizedBox(width: 8),
-
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    side: const BorderSide(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Stat(value: '5', label: 'Recipes',),
+                  SizedBox(
+                    height: 40,
+                    child: VerticalDivider(
+                      thickness: 2,
+                      width: 20,
                       color: Colors.grey,
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                  ),
+                  Stat(value: '1.2k', label: 'Followers'),
+                  SizedBox(
+                    height: 40,
+                    child: VerticalDivider(
+                      thickness: 2,
+                      width: 20,
+                      color: Colors.grey,
                     ),
                   ),
-                  child: const Text('Share profile'),
-                ),
+                  Stat(value: '340', label: 'Following'),
+                ],
               ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
+            ),
+          )
         ],
       ),
     );

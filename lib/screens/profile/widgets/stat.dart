@@ -16,7 +16,7 @@ class Stat extends StatelessWidget {
         Text(
           value,
           style: const TextStyle(
-            fontSize: 17,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -24,7 +24,7 @@ class Stat extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            fontSize: 13,
+            fontSize: 15,
             color: Colors.grey,
           ),
         ),

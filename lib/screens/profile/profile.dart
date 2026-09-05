@@ -19,6 +19,7 @@ class Profile extends StatelessWidget {
                 
               ),
                 SliverPersistentHeader(
+                  pinned: true,
                     delegate: _TabBarDelegate(
                       const TabBar(
                           tabs: [
@@ -45,7 +46,7 @@ class Profile extends StatelessWidget {
             // ])
           body: const TabBarView(
             children: [
-              Center(child: Text('Posts')),
+              RecipeTab(),
               Center(child: Text('Reels')),
               Center(child: Text('Tagged')),
             ],
