@@ -69,36 +69,36 @@ class _MainNavigationState extends State<MainNavigation> {
     );
   }
 
-  PreferredSizeWidget _getAppBar(){
-    switch(_selectedIndex){
-      case 0 :
-        return AppBar(
-          title: Text("Home"),
-        );
-      case 1:
-        return AppBar(
-          title: Text("Search"),
-        );
-
-      case 2:
-        return AppBar(
-          title: Text("Add"),
-        );
-
-      case 3:
-        return AppBar(
-          title: Text("Bookmark"),
-        );
-
-      case 4:
-        return AppBar(
-          title: Text("Profile"),
-        );
-
-      default:
-        return AppBar();
-
-    }
-
-  }
+  // PreferredSizeWidget _getAppBar(){
+  //   switch(_selectedIndex){
+  //     case 0 :
+  //       return AppBar(
+  //         title: Text("Home"),
+  //       );
+  //     case 1:
+  //       return AppBar(
+  //         title: Text("Search"),
+  //       );
+  //
+  //     case 2:
+  //       return AppBar(
+  //         title: Text("Add"),
+  //       );
+  //
+  //     case 3:
+  //       return AppBar(
+  //         title: Text("Bookmark"),
+  //       );
+  //
+  //     case 4:
+  //       return AppBar(
+  //         title: Text("Profile"),
+  //       );
+  //
+  //     default:
+  //       return AppBar();
+  //
+  //   }
+  //
+  // }
 }

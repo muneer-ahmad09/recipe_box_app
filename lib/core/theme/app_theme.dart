@@ -128,7 +128,7 @@ class AppTheme {
 
       labelLarge: TextStyle(
         fontFamily: 'Inter',
-        fontSize: 14,
+        fontSize: 20,
         fontWeight: FontWeight.w600,
         color: AppColors.ink,
       ),

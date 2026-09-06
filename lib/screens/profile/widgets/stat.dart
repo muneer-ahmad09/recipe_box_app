@@ -4,7 +4,7 @@ class Stat extends StatelessWidget {
   final String value;
   final String label;
 
-  const Stat({
+  const Stat({super.key,
     required this.value,
     required this.label,
   });

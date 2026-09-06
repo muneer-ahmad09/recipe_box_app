@@ -21,6 +21,6 @@ class SavedTab extends StatelessWidget {
     //       icon: Icons.image,
     //     );
     //   },
-    return Container(child: Text("Saved Post"),);
+    return Text("Saved Post");
   }
 }

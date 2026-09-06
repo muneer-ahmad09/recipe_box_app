@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:recipe_box_app/core/theme/app_colors.dart';
 import 'package:recipe_box_app/screens/profile/widgets/profile_user_detail.dart';
 import 'package:recipe_box_app/screens/profile/widgets/recipe_tab.dart';
-import 'package:recipe_box_app/screens/profile/widgets/review_tab.dart';
-import 'package:recipe_box_app/screens/profile/widgets/saved_tab.dart';
+
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
