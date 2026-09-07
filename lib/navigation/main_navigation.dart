@@ -5,6 +5,7 @@ import '../screens/bookmark/bookmark.dart';
 import '../screens/home/home.dart';
 import '../screens/profile/profile.dart';
 import '../screens/search/search.dart';
+import '../screens/setting/setting_screen.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -112,9 +113,15 @@ class _MainNavigationState extends State<MainNavigation> {
           title: Text("Profile",style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             fontSize: 25,
             fontWeight: FontWeight.bold,
-          ),),
+          ),
+          ),
           actions: [
-            IconButton(onPressed: () {  }, icon: Icon(Icons.settings))
+            IconButton(onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingScreen()),
+              );
+            }, icon: Icon(Icons.settings))
           ],
         );
 

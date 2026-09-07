@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:recipe_box_app/screens/bookmark/widgets/saved_recipe_card.dart';
+import 'package:recipe_box_app/widgets/saved_recipe_card.dart';
 
 class Bookmark extends StatelessWidget {
   const Bookmark({super.key});
@@ -146,11 +146,14 @@ class Bookmark extends StatelessWidget {
       padding: const EdgeInsets.all(12),
 
       itemBuilder: (BuildContext context, int index) {
-        return SavedRecipeCard(
+        return SavedAndSearchRecipeCard(
           recipeName: dummyRecipes[index]["recipeName"],
           recipeImageUrl: dummyRecipes[index]["recipeImageUrl"],
           recipeTime: dummyRecipes[index]["recipeTime"],
           recipeCategory: dummyRecipes[index]["recipeCategory"],
+          showArrow: false,
+          showBookmark: true,
+          isBookmarked: true,
         );
       },
       separatorBuilder: (BuildContext context, int index) =>
