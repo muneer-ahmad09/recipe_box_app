@@ -33,7 +33,7 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: _getAppBar(),
+      appBar: _getAppBar(),
       body: SafeArea(child: _screens[_selectedIndex]),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
@@ -69,36 +69,59 @@ class _MainNavigationState extends State<MainNavigation> {
     );
   }
 
-  // PreferredSizeWidget _getAppBar(){
-  //   switch(_selectedIndex){
-  //     case 0 :
-  //       return AppBar(
-  //         title: Text("Home"),
-  //       );
-  //     case 1:
-  //       return AppBar(
-  //         title: Text("Search"),
-  //       );
-  //
-  //     case 2:
-  //       return AppBar(
-  //         title: Text("Add"),
-  //       );
-  //
-  //     case 3:
-  //       return AppBar(
-  //         title: Text("Bookmark"),
-  //       );
-  //
-  //     case 4:
-  //       return AppBar(
-  //         title: Text("Profile"),
-  //       );
-  //
-  //     default:
-  //       return AppBar();
-  //
-  //   }
-  //
-  // }
+  PreferredSizeWidget _getAppBar(){
+    switch(_selectedIndex){
+      case 0 :
+        return AppBar(
+          title: Text("Recipe Box",style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+          ),),
+        );
+      case 1:
+        return AppBar(
+          title: Text("Search",style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+          ),),
+        );
+
+      case 2:
+        return AppBar(
+          title: Text("New Recipe",
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+          ),
+          ),
+          actions: [
+            TextButton(onPressed: () {  }, child: Text("Save"),)
+          ],
+        );
+
+      case 3:
+        return AppBar(
+          title: Text("Saved",style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+          ),),
+        );
+
+      case 4:
+        return AppBar(
+          title: Text("Profile",style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+          ),),
+          actions: [
+            IconButton(onPressed: () {  }, icon: Icon(Icons.settings))
+          ],
+        );
+
+      default:
+        return AppBar();
+
+    }
+
+  }
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_box_app/screens/add_item/widgets/add_image.dart';
+import 'package:recipe_box_app/screens/add_item/widgets/category.dart';
 import 'package:recipe_box_app/screens/add_item/widgets/cooking_time.dart';
+import 'package:recipe_box_app/screens/add_item/widgets/ingredient.dart';
+import 'package:recipe_box_app/screens/add_item/widgets/steps.dart';
 
 class AddItem extends StatefulWidget {
   const AddItem({super.key});
@@ -11,8 +14,10 @@ class AddItem extends StatefulWidget {
 
 class _AddItemState extends State<AddItem> {
   int cookingTime = 30;
-  final TextEditingController recipeTextController =
-  TextEditingController();
+  List<String> ingredients = [];
+  List<String> steps = [];
+  late String category;
+  final TextEditingController recipeTextController = TextEditingController();
 
   @override
   void dispose() {
@@ -22,12 +27,8 @@ class _AddItemState extends State<AddItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(
-        left: 12.0,
-        right: 12.0,
-        top: 7.0,
-      ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(left: 12, right: 12,top: 10,bottom: 70),
       child: Column(
         spacing: 14,
         children: [
@@ -37,29 +38,34 @@ class _AddItemState extends State<AddItem> {
             controller: recipeTextController,
             decoration: const InputDecoration(
               hintText: 'Recipe Name',
-              hintStyle: TextStyle(
-                color: Colors.grey,
-              ),
+              hintStyle: TextStyle(color: Colors.grey),
               enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.grey,
-                  width: 1.5,
-                ),
+                borderSide: BorderSide(color: Colors.grey, width: 1.5),
               ),
               focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.black,
-                  width: 2,
-                ),
+                borderSide: BorderSide(color: Colors.black, width: 2),
               ),
             ),
+          ),
+          Category(
+            onCategoryChanged: (value) {
+                category=value;
+            },
           ),
           CookingTime(
             value: cookingTime,
             onChanged: (value) {
-              setState(() {
                 cookingTime = value;
-              });
+            },
+          ),
+          Ingredient(
+            onIngredientsChanged: (newIngredients) {
+              ingredients = newIngredients;
+            },
+          ),
+          Steps(
+            onStepsChanged: (newSteps) {
+              steps = newSteps;
             },
           ),
         ],

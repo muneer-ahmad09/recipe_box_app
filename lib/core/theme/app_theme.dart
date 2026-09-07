@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'app_colors.dart';
 
 class AppTheme {
@@ -8,7 +9,6 @@ class AppTheme {
     // ─────────────────────────────────────────────
     // COLOR SYSTEM
     // ─────────────────────────────────────────────
-
     colorScheme: const ColorScheme(
       brightness: Brightness.light,
 
@@ -33,9 +33,7 @@ class AppTheme {
     // ─────────────────────────────────────────────
     // TYPOGRAPHY
     // ─────────────────────────────────────────────
-
     textTheme: const TextTheme(
-
       // SERIF
       // Used for large/editorial text
 
@@ -83,7 +81,6 @@ class AppTheme {
 
       // SANS-SERIF
       // Used for UI and normal text
-
       titleLarge: TextStyle(
         fontFamily: 'Inter',
         fontSize: 18,
@@ -146,6 +143,13 @@ class AppTheme {
         fontWeight: FontWeight.w500,
         color: AppColors.inkFaint,
       ),
+    ),
+
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.paper,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,//App bar color is transparent when page is scrolled
+      // centerTitle: true,
     ),
   );
 }
