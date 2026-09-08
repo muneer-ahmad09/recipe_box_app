@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_box_app/core/theme/app_colors.dart';
+import 'package:recipe_box_app/screens/auth/welcome/welcome_screen.dart';
 import 'package:recipe_box_app/screens/home/widgets/header.dart';
 import 'package:recipe_box_app/screens/home/widgets/home_page_recipe_card.dart';
 import 'package:recipe_box_app/screens/recipe_page/recipe_page.dart';
@@ -81,7 +82,18 @@ class Home extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineMedium
                     ?.copyWith(fontSize: 30),
               ),
-              Text("See all", style: TextStyle(color: AppColors.petrol)),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => WelcomeScreen()),
+                  );
+                },
+                child: Text(
+                  "See all",
+                  style: TextStyle(color: AppColors.petrol),
+                ),
+              ),
             ],
           ),
           SizedBox(
@@ -94,7 +106,7 @@ class Home extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: HomePageRecipeCard(
-                      id:item["id"],
+                      id: item["id"],
                       title: item["title"],
                       cookName: item["cookName"],
                       rating: item["rating"],
@@ -105,7 +117,8 @@ class Home extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (BuildContext context) => RecipePage(id: item["id"],),
+                        builder: (BuildContext context) =>
+                            RecipePage(id: item["id"]),
                       ),
                     );
                   },
