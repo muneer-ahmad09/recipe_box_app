@@ -1,6 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:recipe_box_app/core/auth/auth_service.dart';
+import 'package:recipe_box_app/core/network/api_client.dart';
 import 'package:recipe_box_app/core/theme/app_colors.dart';
 import 'package:recipe_box_app/screens/auth/register/register_screen.dart';
+
+import '../../../core/storage/token_storage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,12 +30,32 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _login() {
+  void _login() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
+    setState(() {
+      _isLoading = true;
+    });
+    final client = ApiClient();
+    final tokenStorage = TokenStorage();
+    final authService = AuthService(client, tokenStorage);
 
-    // Login logic
+    try {
+      final tokenPair = await authService.login(
+        _emailController.text,
+        _passwordController.text,
+      );
+      final user = await client.getCurrentUser(tokenPair.accessToken);
+      print(user.fullName);
+    } on DioException catch (e) {
+      print(e.response?.statusCode);
+      print(e.response?.data);
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -49,9 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 Text(
                   'Welcome back',
-                  style: theme.textTheme.headlineLarge?.copyWith(
-                    fontSize: 45,
-                  ),
+                  style: theme.textTheme.headlineLarge?.copyWith(fontSize: 45),
                 ),
                 Text(
                   'Your recipe box is missing you',
@@ -142,19 +165,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       child: _isLoading
                           ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
                           : const Text(
-                        'Login',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
+                              'Login',
+                              style: TextStyle(color: Colors.white),
+                            ),
                     ),
                   ),
                 ],
@@ -165,14 +186,15 @@ class _LoginScreenState extends State<LoginScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Don't have an account?",style: Theme.of(context).textTheme.bodyLarge,),
+                Text(
+                  "Don't have an account?",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => RegisterScreen(),
-                      ),
+                      MaterialPageRoute(builder: (context) => RegisterScreen()),
                     );
                   },
                   child: const Text('Sign Up'),
