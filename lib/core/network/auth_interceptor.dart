@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart';
+import 'package:recipe_box_app/core/network/refresh_client.dart';
 import 'package:recipe_box_app/core/storage/token_storage.dart';
 import 'package:recipe_box_app/models/token_pair.dart';
 
 class AuthInterceptor extends Interceptor {
   final TokenStorage tokenStorage;
-  final Dio refreshDio;
+  final RefreshClient refreshClient;
 
-  AuthInterceptor(this.tokenStorage, this.refreshDio);
+  AuthInterceptor(this.tokenStorage, {required this.refreshClient});
 
   late Dio dio;
 
@@ -16,20 +17,6 @@ class AuthInterceptor extends Interceptor {
 
   Future<TokenPair>? refreshFuture;
 
-  Future<TokenPair> _refreshToken() async {
-    final tokenPair = await tokenStorage.getTokenPair();
-    if (tokenPair == null) {
-      throw Exception('No token pair found');
-    }
-
-    final response = await refreshDio.post(
-      '/auth/refresh',
-      data: {'refresh_token': tokenPair.refreshToken},
-    );
-    final newToken = TokenPair.fromJson(response.data);
-    await tokenStorage.saveTokenPair(newToken);
-    return newToken;
-  }
 
   @override
   Future<void> onRequest(
@@ -65,8 +52,8 @@ class AuthInterceptor extends Interceptor {
       }
       try {
         // refreshFuture ??= _refreshToken(); //this means if refreshFuture == null then refreshFuture = _refreshToken()
-        if(refreshFuture == null){
-          refreshFuture = _refreshToken();
+        if (refreshFuture == null) {
+          refreshFuture = refreshClient.refreshToken();
           startedRefresh = true;
         }
         await refreshFuture;

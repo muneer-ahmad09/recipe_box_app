@@ -3,6 +3,7 @@ import 'package:recipe_box_app/core/network/auth_interceptor.dart';
 import 'package:recipe_box_app/models/token_pair.dart';
 
 import '../../models/user.dart';
+import 'api_config.dart';
 
 class ApiClient {
   final AuthInterceptor authInterceptor;
@@ -13,7 +14,7 @@ class ApiClient {
   }
 
   final Dio dio = Dio(
-    BaseOptions(baseUrl: "https://c14f-49-36-217-239.ngrok-free.app"),
+    BaseOptions(baseUrl: ApiConfig.baseUrl),
   );
 
   Future<TokenPair> login(String email, String password) async {
