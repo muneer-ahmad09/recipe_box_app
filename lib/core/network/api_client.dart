@@ -13,7 +13,7 @@ class ApiClient {
   }
 
   final Dio dio = Dio(
-    BaseOptions(baseUrl: "https://27da-49-36-217-239.ngrok-free.app"),
+    BaseOptions(baseUrl: "https://c14f-49-36-217-239.ngrok-free.app"),
   );
 
   Future<TokenPair> login(String email, String password) async {

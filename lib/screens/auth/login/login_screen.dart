@@ -1,15 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:recipe_box_app/core/auth/auth_service.dart';
-import 'package:recipe_box_app/core/network/api_client.dart';
+import 'package:recipe_box_app/core/auth/auth_manager.dart';
 import 'package:recipe_box_app/core/theme/app_colors.dart';
 import 'package:recipe_box_app/screens/auth/register/register_screen.dart';
 
-import '../../../core/network/auth_interceptor.dart';
-import '../../../core/storage/token_storage.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final AuthManager authManager;
+
+  const LoginScreen({super.key, required this.authManager});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -38,36 +37,24 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = true;
     });
-    final refreshDio = Dio(
-      BaseOptions(
-        baseUrl: 'https://27da-49-36-217-239.ngrok-free.app',
-      )
-    );
-    final tokenStorage = TokenStorage();
-    final interceptor = AuthInterceptor(tokenStorage, refreshDio);
-    final client = ApiClient(interceptor);
-
-    final authService = AuthService(client, tokenStorage);
-
     try {
-      await authService.login(
+      await widget.authManager.login(
         _emailController.text,
         _passwordController.text,
       );
-      final user = await authService.getCurrentUser();
-      print(user.fullName);
     } on DioException catch (e) {
-      print(e.response?.statusCode);
-      print(e.response?.data);
-    }finally {
-      // _emailController.clear();
-      // _passwordController.clear();
-      setState(() {
-        _isLoading = false;
-      });
+      if(mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.response?.data['detail'] ?? 'Login failed')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
-
-
   }
 
   @override
@@ -206,7 +193,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => RegisterScreen()),
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            RegisterScreen(authManager: widget.authManager),
+                      ),
                     );
                   },
                   child: const Text('Sign Up'),

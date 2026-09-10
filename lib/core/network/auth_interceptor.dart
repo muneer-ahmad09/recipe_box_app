@@ -21,6 +21,7 @@ class AuthInterceptor extends Interceptor {
     if (tokenPair == null) {
       throw Exception('No token pair found');
     }
+
     final response = await refreshDio.post(
       '/auth/refresh',
       data: {'refresh_token': tokenPair.refreshToken},
@@ -71,7 +72,9 @@ class AuthInterceptor extends Interceptor {
         await refreshFuture;
         err.requestOptions.extra['auth_retry'] = true;
       } catch (_) {
-        await tokenStorage.deleteTokenPair();
+        if(startedRefresh) {
+          await tokenStorage.deleteTokenPair();
+        }
         handler.next(err);
         return;
       } finally {
