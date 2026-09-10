@@ -1,5 +1,6 @@
 import 'package:recipe_box_app/core/network/api_client.dart';
 import 'package:recipe_box_app/models/token_pair.dart';
+import 'package:recipe_box_app/models/user.dart';
 
 import '../storage/token_storage.dart';
 
@@ -13,5 +14,9 @@ class AuthService {
     final tokenPair = await apiClient.login(email, password);
     await tokenStorage.saveTokenPair(tokenPair);
     return tokenPair;
+  }
+
+  Future <User> getCurrentUser() {
+    return apiClient.getCurrentUser();
   }
 }

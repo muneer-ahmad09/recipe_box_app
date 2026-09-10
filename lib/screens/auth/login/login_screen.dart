@@ -5,6 +5,7 @@ import 'package:recipe_box_app/core/network/api_client.dart';
 import 'package:recipe_box_app/core/theme/app_colors.dart';
 import 'package:recipe_box_app/screens/auth/register/register_screen.dart';
 
+import '../../../core/network/auth_interceptor.dart';
 import '../../../core/storage/token_storage.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -37,25 +38,36 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = true;
     });
-    final client = ApiClient();
+    final refreshDio = Dio(
+      BaseOptions(
+        baseUrl: 'https://27da-49-36-217-239.ngrok-free.app',
+      )
+    );
     final tokenStorage = TokenStorage();
+    final interceptor = AuthInterceptor(tokenStorage, refreshDio);
+    final client = ApiClient(interceptor);
+
     final authService = AuthService(client, tokenStorage);
 
     try {
-      final tokenPair = await authService.login(
+      await authService.login(
         _emailController.text,
         _passwordController.text,
       );
-      final user = await client.getCurrentUser(tokenPair.accessToken);
+      final user = await authService.getCurrentUser();
       print(user.fullName);
     } on DioException catch (e) {
       print(e.response?.statusCode);
       print(e.response?.data);
+    }finally {
+      // _emailController.clear();
+      // _passwordController.clear();
+      setState(() {
+        _isLoading = false;
+      });
     }
 
-    setState(() {
-      _isLoading = false;
-    });
+
   }
 
   @override
