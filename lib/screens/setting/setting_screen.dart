@@ -81,8 +81,11 @@ import 'package:recipe_box_app/screens/setting/widgets/settings_container.dart';
 import 'package:recipe_box_app/screens/setting/widgets/settings_divider.dart';
 import 'package:recipe_box_app/screens/setting/widgets/settings_tile.dart';
 
+import '../../core/auth/auth_manager.dart';
+
 class SettingScreen extends StatelessWidget {
-  const SettingScreen({super.key});
+  final AuthManager authManager;
+  const SettingScreen({super.key, required this.authManager});
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +202,7 @@ class SettingScreen extends StatelessWidget {
                   showDialog(
                     context: context,
                     builder: (context) {
-                      return const LogoutDialog();
+                      return LogoutDialog(authManager: authManager,);
                     },
                   );
                 },

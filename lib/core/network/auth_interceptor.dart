@@ -24,7 +24,7 @@ class AuthInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     final publicPath =
-        options.path == '/auth/login' || options.path == '/auth/register';
+        options.path == '/auth/login' || options.path == '/auth/register' || options.path == '/auth/logout';
 
     if (!publicPath) {
       final tokenPair = await tokenStorage.getTokenPair();

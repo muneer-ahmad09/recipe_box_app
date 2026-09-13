@@ -1,4 +1,4 @@
 class ApiConfig {
   static const String baseUrl =
-      'https://c14f-49-36-217-239.ngrok-free.app';
+      'https://recipe-box-backend-l282.onrender.com';
 }

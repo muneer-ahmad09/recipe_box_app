@@ -13,9 +13,7 @@ class ApiClient {
     dio.interceptors.add(authInterceptor);
   }
 
-  final Dio dio = Dio(
-    BaseOptions(baseUrl: ApiConfig.baseUrl),
-  );
+  final Dio dio = Dio(BaseOptions(baseUrl: ApiConfig.baseUrl));
 
   Future<TokenPair> login(String email, String password) async {
     final response = await dio.post(
@@ -27,8 +25,28 @@ class ApiClient {
   }
 
   Future<User> getCurrentUser() async {
-    final response = await dio.get(
-      '/auth/me');
+    final response = await dio.get('/auth/me');
     return User.fromJson(response.data);
+  }
+
+  Future<TokenPair> register(
+    String email,
+    String password,
+    String fullName,
+  ) async {
+    final response = await dio.post(
+      '/auth/register',
+      data: {'email': email, 'password': password, 'full_name': fullName},
+      options: Options(contentType: Headers.jsonContentType),
+    );
+    return TokenPair.fromJson(response.data);
+  }
+  Future<void> logout(String refreshToken) async {
+    await dio.post('/auth/logout',
+    data: {
+      'refresh_token': refreshToken,
+        },
+      options: Options(contentType: Headers.jsonContentType)
+    );
   }
 }

@@ -67,6 +67,27 @@ class AuthManager extends ChangeNotifier {
     _user = await authService.getCurrentUser();
     setAuthState(AuthState.authenticated);
   }
+  Future<void> register(String email, String password, String fullName) async{
+    await authService.register(email, password, fullName);
+    _user = await authService.getCurrentUser();
+    setAuthState(AuthState.authenticated);
+  }
 
+  Future<void> logout() async {
+    final tokenPair = await tokenStorage.getTokenPair();
+    if (tokenPair == null) {
+      setAuthState(AuthState.unauthenticated);
+      return;
+    }
+    try{
+      await authService.logout(tokenPair.refreshToken);
+
+    }finally{
+      await tokenStorage.deleteTokenPair();
+      _user = null;
+      setAuthState(AuthState.unauthenticated);
+    }
+
+  }
 
 }

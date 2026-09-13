@@ -46,8 +46,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
-      // await authService.register(...);
-
+      await widget.authManager.register(
+        _emailController.text,
+        _passwordController.text,
+        _fullNameController.text,
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -82,20 +85,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 children: [
                   Text(
                     "Create Account",
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .headlineLarge
+                    style: Theme.of(context).textTheme.headlineLarge
                         ?.copyWith(fontSize: 45),
                   ),
                   SizedBox(
                     width: 300,
                     child: Text(
                       "Start collecting the recipe that you'll actually cook again",
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .bodyLarge,
+                      style: Theme.of(context).textTheme.bodyLarge,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -116,9 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.person_outline),
                     ),
                     validator: (value) {
-                      if (value == null || value
-                          .trim()
-                          .isEmpty) {
+                      if (value == null || value.trim().isEmpty) {
                         return "Please enter your full name";
                       }
                       if (value.length < 3) {
@@ -135,9 +130,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.email_outlined),
                     ),
                     validator: (value) {
-                      if (value == null || value
-                          .trim()
-                          .isEmpty) {
+                      if (value == null || value.trim().isEmpty) {
                         return "Please enter your email";
                       }
                       if (!value.contains("@")) {
@@ -150,9 +143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     controller: _passwordController,
                     obscureText: !_isPasswordVisible,
                     validator: (value) {
-                      if (value == null || value
-                          .trim()
-                          .isEmpty) {
+                      if (value == null || value.trim().isEmpty) {
                         return "Please enter your password";
                       }
                       if (value.length < 6) {
@@ -187,7 +178,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onPressed: () {
                           setState(() {
                             _isConfirmPasswordVisible =
-                            !_isConfirmPasswordVisible;
+                                !_isConfirmPasswordVisible;
                           });
                         },
                         icon: !_isConfirmPasswordVisible
@@ -196,9 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     validator: (value) {
-                      if (value == null || value
-                          .trim()
-                          .isEmpty) {
+                      if (value == null || value.trim().isEmpty) {
                         return "Please enter your password";
                       }
                       if (value != _passwordController.text) {
@@ -232,10 +221,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: Text(
-                        "Sign Up",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              "Sign Up",
+                              style: TextStyle(color: Colors.white),
+                            ),
                     ),
                   ),
                 ],
@@ -247,18 +245,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 Text(
                   "Already have an account?",
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyLarge,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>
-                          LoginScreen(
-                            authManager: widget.authManager,)),
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            LoginScreen(authManager: widget.authManager),
+                      ),
                     );
                   },
                   child: Text("Log In"),
@@ -267,8 +263,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ],
         ),
-      )
-      ,
+      ),
     );
   }
 }

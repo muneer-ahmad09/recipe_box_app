@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_box_app/core/auth/auth_manager.dart';
 
 import '../screens/add_item/add_item.dart';
 import '../screens/bookmark/bookmark.dart';
@@ -8,7 +9,8 @@ import '../screens/search/search.dart';
 import '../screens/setting/setting_screen.dart';
 
 class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+  final AuthManager authManager;
+  const MainNavigation({super.key, required this.authManager});
 
   @override
   State<StatefulWidget> createState() => _MainNavigationState();
@@ -33,44 +35,50 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _getAppBar(),
-      body: SafeArea(child: _screens[_selectedIndex]),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: _onDestinationSelected,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_filled),
-            label: "Home",
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.search_outlined),
-            selectedIcon: Icon(Icons.search),
-            label: "Search",
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.add_box_outlined),
-            selectedIcon: Icon(Icons.add_box),
-            label: "Add",
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.bookmark_outline_rounded),
-            selectedIcon: Icon(Icons.bookmark_rounded),
-            label: "Home",
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_3_outlined),
-            selectedIcon: Icon(Icons.person_3_rounded),
-            label: "Home",
-          ),
-        ],
-      ),
+    return Navigator(
+      onGenerateRoute: (settings) {
+        return MaterialPageRoute(
+          builder: (context) =>Scaffold(
+            appBar: _getAppBar(context,widget.authManager),
+            body: SafeArea(child: _screens[_selectedIndex]),
+            bottomNavigationBar: NavigationBar(
+              selectedIndex: _selectedIndex,
+              onDestinationSelected: _onDestinationSelected,
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home_filled),
+                  label: "Home",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.search_outlined),
+                  selectedIcon: Icon(Icons.search),
+                  label: "Search",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.add_box_outlined),
+                  selectedIcon: Icon(Icons.add_box),
+                  label: "Add",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.bookmark_outline_rounded),
+                  selectedIcon: Icon(Icons.bookmark_rounded),
+                  label: "Home",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.person_3_outlined),
+                  selectedIcon: Icon(Icons.person_3_rounded),
+                  label: "Home",
+                ),
+              ],
+            ),
+          )
+        );
+      }
     );
   }
 
-  PreferredSizeWidget _getAppBar(){
+  PreferredSizeWidget _getAppBar(BuildContext context,AuthManager authManager){
     switch(_selectedIndex){
       case 0 :
         return AppBar(
@@ -119,7 +127,7 @@ class _MainNavigationState extends State<MainNavigation> {
             IconButton(onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const SettingScreen()),
+                MaterialPageRoute(builder: (context) => SettingScreen(authManager: authManager,)),
               );
             }, icon: Icon(Icons.settings))
           ],

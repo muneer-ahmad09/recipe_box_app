@@ -78,7 +78,7 @@ class _MyAppState extends State<MyApp> {
             if (widget.authManager.authState == AuthState.initializing) {
               return const SizedBox.shrink(); // means render noting
             } else if (widget.authManager.authState == AuthState.authenticated) {
-              return const MainNavigation();
+              return MainNavigation(authManager: widget.authManager,);
             } else {
               return AuthNavigation(authManager: widget.authManager,);
             }
