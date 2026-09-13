@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:recipe_box_app/core/network/auth_interceptor.dart';
 import 'package:recipe_box_app/models/token_pair.dart';
 
+import '../../models/page.dart';
+import '../../models/recipe_card.dart';
 import '../../models/user.dart';
 import 'api_config.dart';
 
@@ -47,6 +49,23 @@ class ApiClient {
       'refresh_token': refreshToken,
         },
       options: Options(contentType: Headers.jsonContentType)
+    );
+  }
+
+  //Recipes
+
+  Future<Page<RecipeCard>> getRecipes()async{
+    final response = await dio.get(
+      '/recipes',
+      queryParameters: {
+        'page': 1,
+        'page_size': 10,
+        'sort': 'newest',
+      },
+    );
+    return Page<RecipeCard>.fromJson(
+      response.data,
+      RecipeCard.fromJson,
     );
   }
 }

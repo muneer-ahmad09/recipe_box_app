@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:recipe_box_app/core/services/recipe_service.dart';
 
 import 'package:recipe_box_app/navigation/auth_navigation.dart';
 import 'package:recipe_box_app/navigation/main_navigation.dart';
@@ -23,14 +24,16 @@ void main() {
   runApp(
     MyApp(
       authManager: dependencies.authManager,
+      recipeService: dependencies.recipeService,
     ),
   );
 }
 
 class MyApp extends StatefulWidget {
   final AuthManager authManager;
+  final RecipeService recipeService;
 
-  const MyApp({super.key, required this.authManager});
+  const MyApp({super.key, required this.authManager, required this.recipeService});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -78,7 +81,7 @@ class _MyAppState extends State<MyApp> {
             if (widget.authManager.authState == AuthState.initializing) {
               return const SizedBox.shrink(); // means render noting
             } else if (widget.authManager.authState == AuthState.authenticated) {
-              return MainNavigation(authManager: widget.authManager,);
+              return MainNavigation(authManager: widget.authManager,recipeService: widget.recipeService,);
             } else {
               return AuthNavigation(authManager: widget.authManager,);
             }

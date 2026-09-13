@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_box_app/core/auth/auth_manager.dart';
 
+import '../core/services/recipe_service.dart';
 import '../screens/add_item/add_item.dart';
 import '../screens/bookmark/bookmark.dart';
 import '../screens/home/home.dart';
@@ -10,7 +11,8 @@ import '../screens/setting/setting_screen.dart';
 
 class MainNavigation extends StatefulWidget {
   final AuthManager authManager;
-  const MainNavigation({super.key, required this.authManager});
+  final RecipeService recipeService;
+  const MainNavigation({super.key, required this.authManager, required this.recipeService});
 
   @override
   State<StatefulWidget> createState() => _MainNavigationState();
@@ -25,8 +27,8 @@ class _MainNavigationState extends State<MainNavigation> {
     });
   }
 
-  final List<Widget> _screens = [
-    Home(),
+  late final List<Widget> _screens = [
+    Home( authManager: widget.authManager,recipeService: widget.recipeService,),
     Search(),
     AddItem(),
     Bookmark(),

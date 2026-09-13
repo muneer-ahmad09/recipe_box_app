@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 
 import '../../../widgets/category_button.dart';
 
-class Category extends StatefulWidget {
+class AddItemCategory extends StatefulWidget {
 
   final ValueChanged<String> onCategoryChanged;
 
-  const Category({super.key, required this.onCategoryChanged});
+  const AddItemCategory({super.key, required this.onCategoryChanged});
 
   @override
-  State<Category> createState() => _CategoryState();
+  State<AddItemCategory> createState() => _AddItemCategoryState();
 }
 
-class _CategoryState extends State<Category> {
+class _AddItemCategoryState extends State<AddItemCategory> {
   final List<String> categories = ["Dinner", "Breakfast", "Lunch", "Dessert"];
 
   String? selectedCategory;

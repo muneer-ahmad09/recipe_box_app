@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_box_app/screens/add_item/widgets/add_image.dart';
-import 'package:recipe_box_app/screens/add_item/widgets/category.dart';
+import 'package:recipe_box_app/screens/add_item/widgets/add_item_category.dart';
 import 'package:recipe_box_app/screens/add_item/widgets/cooking_time.dart';
 import 'package:recipe_box_app/screens/add_item/widgets/ingredient.dart';
 import 'package:recipe_box_app/screens/add_item/widgets/steps.dart';
@@ -47,7 +47,7 @@ class _AddItemState extends State<AddItem> {
               ),
             ),
           ),
-          Category(
+          AddItemCategory(
             onCategoryChanged: (value) {
                 category=value;
             },

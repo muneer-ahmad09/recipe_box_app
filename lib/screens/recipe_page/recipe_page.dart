@@ -4,7 +4,7 @@ import 'package:recipe_box_app/screens/recipe_page/widgets/recipe_check_box.dart
 import 'package:recipe_box_app/screens/recipe_page/widgets/recipe_page_card.dart';
 
 class RecipePage extends StatelessWidget {
-  final int id;
+  final String id;
 
   static const List<Map<String, dynamic>> dummyData  = [
     {

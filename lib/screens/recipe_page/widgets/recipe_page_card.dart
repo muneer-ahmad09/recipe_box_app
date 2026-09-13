@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_box_app/core/theme/app_colors.dart';
-import 'package:recipe_box_app/screens/recipe_page/widgets/recipe_tab.dart';
+import 'package:recipe_box_app/widgets/options_tab.dart';
 import 'package:recipe_box_app/widgets/dash_lines.dart';
 
-class RecipePageCard extends StatelessWidget{
+class RecipePageCard extends StatefulWidget{
   const RecipePageCard({super.key});
+
+  @override
+  State<RecipePageCard> createState() => _RecipePageCardState();
+}
+
+class _RecipePageCardState extends State<RecipePageCard> {
+  late String selectedTabOption;
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +98,11 @@ class RecipePageCard extends StatelessWidget{
                 )
               ],
             ),
-            RecipeTabs()
+            OptionsTabs(options: ["Ingredients","Steps"], changeValue: (String value) {
+              setState(() {
+                selectedTabOption = value;
+              });
+            },)
 
 
           ],

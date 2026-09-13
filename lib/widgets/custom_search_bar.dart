@@ -5,8 +5,10 @@ class CustomSearchBar extends StatelessWidget {
     super.key,
     required this.hintText,
     required this.onSearch,
+    this.elevateSearchBar = false,
   });
 
+  final bool elevateSearchBar;
   final String hintText;
   final VoidCallback onSearch;
 
@@ -20,12 +22,16 @@ class CustomSearchBar extends StatelessWidget {
       ),
       shape: const WidgetStatePropertyAll(
         RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(12),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
       ),
-      elevation: const WidgetStatePropertyAll(2),
+      side:WidgetStatePropertyAll(
+        BorderSide(
+          width: 1.5,
+            color: const Color(0xFFBDBDBD),
+        ),
+      ),
+      elevation: elevateSearchBar ? const WidgetStatePropertyAll(2): const WidgetStatePropertyAll(0),
     );
   }
 }

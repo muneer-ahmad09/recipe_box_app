@@ -1,9 +1,24 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../models/user.dart';
 
 class Header extends StatelessWidget {
-  const Header({super.key});
+  final User user;
+
+  const Header({super.key, required this.user});
+
+  String get greeting {
+    final hour = DateTime.now().hour;
+
+    if (hour < 12) {
+      return "Good Morning";
+    } else if (hour < 17) {
+      return "Good Afternoon";
+    } else {
+      return "Good Evening";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +32,7 @@ class Header extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Good Evening Sam",
+                  "$greeting ${user.fullName}",
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     color: AppColors.headingMuted,
                     fontSize: 15,

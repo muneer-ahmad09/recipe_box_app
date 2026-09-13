@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_box_app/core/auth/auth_manager.dart';
 import 'package:recipe_box_app/core/theme/app_colors.dart';
-import 'package:recipe_box_app/screens/auth/welcome/welcome_screen.dart';
+import 'package:recipe_box_app/screens/all_recipes/all_recipes_screen.dart';
 import 'package:recipe_box_app/screens/home/widgets/header.dart';
 import 'package:recipe_box_app/screens/home/widgets/home_page_recipe_card.dart';
 import 'package:recipe_box_app/screens/recipe_page/recipe_page.dart';
 import 'package:recipe_box_app/widgets/category_button.dart';
 import 'package:recipe_box_app/widgets/custom_search_bar.dart';
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+import '../../core/services/recipe_service.dart';
+import '../../models/recipe_card.dart';
+
+class Home extends StatefulWidget {
+  final AuthManager authManager;
+  final RecipeService recipeService;
+  const Home({super.key, required this.authManager, required this.recipeService});
 
   static const List dummyData = [
     {
@@ -34,6 +40,36 @@ class Home extends StatelessWidget {
     },
   ];
 
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+
+  List<RecipeCard> recipes = [];
+
+  String? selectedCategory;
+  List<String> categories = [
+    "All",
+    "Breakfast",
+    "Dinner"
+  ];
+
+  Future<void> _loadRecipes() async {
+    final page = await widget.recipeService.getNewestRecipes();
+    setState(() {
+      recipes = page.items;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecipes();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -44,35 +80,26 @@ class Home extends StatelessWidget {
         spacing: 18,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Header(),
+          Header(user: widget.authManager.user!,),
           CustomSearchBar(
+            elevateSearchBar: true,
             hintText: "Search recipes, ingredients...",
             onSearch: () {},
           ),
           Wrap(
             spacing: 10,
             alignment: WrapAlignment.start,
-            children: [
-              CategoryButton(
-                buttonName: "All",
+            children: categories.map((category) {
+              return CategoryButton(
+                buttonName: category,
+                isActive: selectedCategory == category,
                 callback: () {
-                  print("All Button Pressed");
+                  setState(() {
+                    selectedCategory = category;
+                  });
                 },
-                isActive: true,
-              ),
-              CategoryButton(
-                buttonName: "Breakfast",
-                callback: () {
-                  print("All Button Pressed");
-                },
-              ),
-              CategoryButton(
-                buttonName: "Dinner",
-                callback: () {
-                  print("All Button Pressed");
-                },
-              ),
-            ],
+              );
+            }).toList(),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,7 +111,10 @@ class Home extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AllRecipesScreen()),
+                  );
                 },
                 child: Text(
                   "See all",
@@ -98,16 +128,18 @@ class Home extends StatelessWidget {
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
-                final item = dummyData[index];
+                final item = recipes[index];
                 return InkWell(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: HomePageRecipeCard(
-                      id: item["id"],
-                      title: item["title"],
-                      cookName: item["cookName"],
-                      rating: item["rating"],
-                      level: item["level"],
+                      id: item.id,
+                      title: item.title,
+                      imageUrl: item.imageUrl,
+                      cookName: item.author,
+                      rating: item.ratingAvg,
+                      level: item.difficulty,
+                      cookMinutes: item.cookMinutes,
                     ),
                   ),
                   onTap: () {
@@ -115,13 +147,13 @@ class Home extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (BuildContext context) =>
-                            RecipePage(id: item["id"]),
+                            RecipePage(id: item.id),
                       ),
                     );
                   },
                 );
               },
-              itemCount: dummyData.length,
+              itemCount:recipes.length,
             ),
           ),
         ],
