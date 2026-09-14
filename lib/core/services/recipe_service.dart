@@ -7,8 +7,8 @@ class RecipeService {
 
   RecipeService(this.apiClient);
 
-  Future<Page<RecipeCard>> getNewestRecipes() {
-    return apiClient.getRecipes();
+  Future<Page<RecipeCard>> getNewestRecipes({String? category}) {
+    return apiClient.getRecipes(category: category);
   }
 
 }

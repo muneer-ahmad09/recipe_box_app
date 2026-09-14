@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:recipe_box_app/core/network/api_client.dart';
 import 'package:recipe_box_app/models/token_pair.dart';
 import 'package:recipe_box_app/models/user.dart';

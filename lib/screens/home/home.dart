@@ -8,59 +8,110 @@ import 'package:recipe_box_app/screens/recipe_page/recipe_page.dart';
 import 'package:recipe_box_app/widgets/category_button.dart';
 import 'package:recipe_box_app/widgets/custom_search_bar.dart';
 
+import '../../core/network/api_exception.dart';
 import '../../core/services/recipe_service.dart';
 import '../../models/recipe_card.dart';
 
 class Home extends StatefulWidget {
   final AuthManager authManager;
   final RecipeService recipeService;
-  const Home({super.key, required this.authManager, required this.recipeService});
 
-  static const List dummyData = [
-    {
-      "id": 1,
-      "title": "Brow Butter Misco Cookies",
-      "cookName": "Jo Ainsworth",
-      "rating": 4.8,
-      "level": "Easy",
-    },
-    {
-      "id": 2,
-      "title": "Brow Butter Misco Cookies",
-      "cookName": "Jo Ainsworth",
-      "rating": 4.8,
-      "level": "Easy",
-    },
-    {
-      "id": 3,
-      "title": "Brow Butter Misco Cookies",
-      "cookName": "Jo Ainsworth",
-      "rating": 4.8,
-      "level": "Easy",
-    },
-  ];
-
+  const Home({
+    super.key,
+    required this.authManager,
+    required this.recipeService,
+  });
 
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-
   List<RecipeCard> recipes = [];
 
-  String? selectedCategory;
-  List<String> categories = [
-    "All",
-    "Breakfast",
-    "Dinner"
-  ];
+  bool _isLoading = true;
+  String? errorMessage;
+
+  String? selectedCategory = "All";
+  List<String> categories = ["All", "Breakfast", "Dinner"];
 
   Future<void> _loadRecipes() async {
-    final page = await widget.recipeService.getNewestRecipes();
     setState(() {
-      recipes = page.items;
+      _isLoading = true;
+      errorMessage = null;
     });
+    try {
+      final page = await widget.recipeService.getNewestRecipes(
+        category: selectedCategory == "All" ? null : selectedCategory,
+      );
+      if (mounted) {
+        setState(() {
+          recipes = page.items;
+          _isLoading = false;
+        });
+      }
+    } on ApiException catch (e) {
+      if (mounted) {
+        setState(() {
+          errorMessage = e.message;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          errorMessage = 'Something went wrong. Please try again.';
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Widget _buildRecipeSection() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (errorMessage != null && errorMessage!.isNotEmpty) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(errorMessage!),
+          const SizedBox(height: 16),
+          ElevatedButton(onPressed: _loadRecipes, child: const Text('Retry')),
+        ],
+      );
+    } else if (recipes.isEmpty) {
+      return const Center(child: Text("No recipes found"));
+    } else {
+      return ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, index) {
+          final item = recipes[index];
+          return InkWell(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: HomePageRecipeCard(
+                id: item.id,
+                title: item.title,
+                imageUrl: item.imageUrl,
+                cookName: item.author,
+                rating: item.ratingAvg,
+                level: item.difficulty,
+                cookMinutes: item.cookMinutes,
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => RecipePage(id: item.id),
+                ),
+              );
+            },
+          );
+        },
+        itemCount: recipes.length,
+      );
+    }
   }
 
   @override
@@ -68,7 +119,6 @@ class _HomeState extends State<Home> {
     super.initState();
     _loadRecipes();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +130,7 @@ class _HomeState extends State<Home> {
         spacing: 18,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Header(user: widget.authManager.user!,),
+          Header(user: widget.authManager.user!),
           CustomSearchBar(
             elevateSearchBar: true,
             hintText: "Search recipes, ingredients...",
@@ -97,6 +147,7 @@ class _HomeState extends State<Home> {
                   setState(() {
                     selectedCategory = category;
                   });
+                  _loadRecipes();
                 },
               );
             }).toList(),
@@ -123,39 +174,7 @@ class _HomeState extends State<Home> {
               ),
             ],
           ),
-          SizedBox(
-            height: 320,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                final item = recipes[index];
-                return InkWell(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: HomePageRecipeCard(
-                      id: item.id,
-                      title: item.title,
-                      imageUrl: item.imageUrl,
-                      cookName: item.author,
-                      rating: item.ratingAvg,
-                      level: item.difficulty,
-                      cookMinutes: item.cookMinutes,
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            RecipePage(id: item.id),
-                      ),
-                    );
-                  },
-                );
-              },
-              itemCount:recipes.length,
-            ),
-          ),
+          SizedBox(height: 320, child: _buildRecipeSection()),
         ],
       ),
     );

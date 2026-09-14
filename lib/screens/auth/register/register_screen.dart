@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:recipe_box_app/core/auth/auth_manager.dart';
 import 'package:recipe_box_app/screens/auth/login/login_screen.dart';
 
-import '../../../core/auth/auth_service.dart';
 import '../../../core/theme/app_colors.dart';
 
 class RegisterScreen extends StatefulWidget {
