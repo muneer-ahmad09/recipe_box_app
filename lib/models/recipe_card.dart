@@ -41,4 +41,19 @@ class RecipeCard {
       isFavorite: json['is_favorite'],
     );
   }
+
+  RecipeCard copyWith({bool? isFavorite}) {
+    return RecipeCard(
+      id: id,
+      title: title,
+      imageUrl: imageUrl,
+      cookMinutes: cookMinutes,
+      difficulty: difficulty,
+      category: category,
+      author: author,
+      ratingAvg: ratingAvg,
+      ratingCount: ratingCount,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
 }

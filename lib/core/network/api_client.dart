@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:recipe_box_app/core/network/auth_interceptor.dart';
+import 'package:recipe_box_app/models/favorite_api_model.dart';
 import 'package:recipe_box_app/models/token_pair.dart';
 
 import '../../models/page.dart';
@@ -167,12 +168,26 @@ class ApiClient {
 
   //Recipes
 
-  Future<Page<RecipeCard>> getRecipes({String? category}) async {
-    final queryParameters = {'page': 1, 'page_size': 10, 'sort': 'newest'};
+  Future<Page<RecipeCard>> getRecipes({
+    int page=1,
+    int pageSize=10,
+    String? category,
+    String? search,
+    String sort='newest',
+    int? maxCookMinutes,
+  }) async {
+    final queryParameters = {'page': page, 'page_size': pageSize, 'sort': sort};
 
     if (category != null) {
       queryParameters['category'] = category;
     }
+    if (search != null && search.isNotEmpty) {
+      queryParameters['search'] = search;
+    }
+    if (maxCookMinutes != null) {
+      queryParameters['max_cook_minutes'] = maxCookMinutes;
+    }
+
 
     final response = await _request(
       '/recipes',
@@ -181,5 +196,13 @@ class ApiClient {
     );
 
     return Page<RecipeCard>.fromJson(response.data, RecipeCard.fromJson);
+  }
+
+  Future<FavoriteApiModel> toggleFavorite(String recipeId) async {
+    final response = await _request(
+      '/recipes/$recipeId/favorite',
+      'POST',
+    );
+    return FavoriteApiModel.fromJson(response.data);
   }
 }

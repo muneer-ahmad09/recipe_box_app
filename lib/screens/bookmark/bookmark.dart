@@ -151,9 +151,11 @@ class Bookmark extends StatelessWidget {
           recipeImageUrl: dummyRecipes[index]["recipeImageUrl"],
           recipeTime: dummyRecipes[index]["recipeTime"],
           recipeCategory: dummyRecipes[index]["recipeCategory"],
-          showArrow: false,
-          showBookmark: true,
-          isBookmarked: true,
+          isFavorite: true,
+          onTapFavorite: () {
+            // Handle favorite button tap
+          },
+          isFavoriteLoading: false,
         );
       },
       separatorBuilder: (BuildContext context, int index) =>

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class SavedAndSearchRecipeCard extends StatelessWidget {
   final String recipeName;
-  final String recipeImageUrl;
+  final String? recipeImageUrl;
   final int recipeTime;
   final String recipeCategory;
+  final VoidCallback? onTapFavorite;
 
-  final bool showArrow;
-  final bool showBookmark;
-  final bool isBookmarked;
+  final bool isFavorite;
+  final bool isFavoriteLoading;
 
   const SavedAndSearchRecipeCard({
     super.key,
@@ -16,9 +16,9 @@ class SavedAndSearchRecipeCard extends StatelessWidget {
     required this.recipeImageUrl,
     required this.recipeTime,
     required this.recipeCategory,
-    required this.showArrow,
-    required this.showBookmark,
-    required this.isBookmarked,
+    required this.isFavorite,
+    this.onTapFavorite,
+    required this.isFavoriteLoading,
   });
 
   @override
@@ -40,14 +40,19 @@ class SavedAndSearchRecipeCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
               ),
               clipBehavior: Clip.antiAlias,
-              child: Image.network(recipeImageUrl, fit: BoxFit.cover),
+              child: recipeImageUrl != null
+                  ? Image.network(recipeImageUrl!, fit: BoxFit.cover)
+                  : const Icon(Icons.image),
             ),
             //detail part
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(recipeName, style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    recipeName,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   Row(
                     children: [
                       Text(
@@ -65,10 +70,28 @@ class SavedAndSearchRecipeCard extends StatelessWidget {
               ),
             ),
             //icon part
-            if(showArrow)
-              Center(child: Icon(Icons.arrow_forward_ios)),
-            if(showBookmark)
-              Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border),
+            isFavoriteLoading
+                ? const SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: Center(
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  )
+                : IconButton(
+                    onPressed: onTapFavorite,
+                    icon: Icon(
+                      isFavorite
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
+                      color: isFavorite ? Colors.red : Colors.grey,
+                      size: 30,
+                    ),
+                  ),
           ],
         ),
       ),

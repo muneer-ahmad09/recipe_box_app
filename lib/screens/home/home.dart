@@ -27,38 +27,46 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final TextEditingController _searchController = TextEditingController();
   List<RecipeCard> recipes = [];
+  int _requestId = 0;
 
   bool _isLoading = true;
   String? errorMessage;
 
   String? selectedCategory = "All";
+  String? searchQuery;
   List<String> categories = ["All", "Breakfast", "Dinner"];
 
-  Future<void> _loadRecipes() async {
+  Future<void> _loadRecipes({String? category, String? search}) async {
+    final requestId = ++_requestId;
+
     setState(() {
       _isLoading = true;
       errorMessage = null;
     });
+
     try {
-      final page = await widget.recipeService.getNewestRecipes(
-        category: selectedCategory == "All" ? null : selectedCategory,
+      final page = await widget.recipeService.getRecipes(
+        category: category == "All" ? null : category,
+        search: search,
       );
-      if (mounted) {
+
+      if (mounted && requestId == _requestId) {
         setState(() {
           recipes = page.items;
           _isLoading = false;
         });
       }
     } on ApiException catch (e) {
-      if (mounted) {
+      if (mounted && requestId == _requestId) {
         setState(() {
           errorMessage = e.message;
           _isLoading = false;
         });
       }
     } catch (e) {
-      if (mounted) {
+      if (mounted && requestId == _requestId) {
         setState(() {
           errorMessage = 'Something went wrong. Please try again.';
           _isLoading = false;
@@ -76,7 +84,10 @@ class _HomeState extends State<Home> {
         children: [
           Text(errorMessage!),
           const SizedBox(height: 16),
-          ElevatedButton(onPressed: _loadRecipes, child: const Text('Retry')),
+          ElevatedButton(
+            onPressed: () => _loadRecipes(search: searchQuery,category: selectedCategory),
+            child: const Text('Retry'),
+          ),
         ],
       );
     } else if (recipes.isEmpty) {
@@ -117,7 +128,13 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    _loadRecipes();
+    _loadRecipes(category: selectedCategory);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -131,11 +148,30 @@ class _HomeState extends State<Home> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Header(user: widget.authManager.user!),
-          CustomSearchBar(
-            elevateSearchBar: true,
-            hintText: "Search recipes, ingredients...",
-            onSearch: () {},
-          ),
+        CustomSearchBar(
+          controller: _searchController,
+          elevateSearchBar: true,
+          hintText: "Search recipes, ingredients...",
+          onSearch: (query) {
+            setState(() {
+              searchQuery = query;
+            });
+
+            _loadRecipes(
+              search: query,
+              category: selectedCategory,
+            );
+          },
+          onClear: () {
+            setState(() {
+              searchQuery = null;
+            });
+
+            _loadRecipes(
+              category: selectedCategory,
+            );
+          },
+        ),
           Wrap(
             spacing: 10,
             alignment: WrapAlignment.start,
@@ -147,7 +183,7 @@ class _HomeState extends State<Home> {
                   setState(() {
                     selectedCategory = category;
                   });
-                  _loadRecipes();
+                  _loadRecipes(search:searchQuery,category: category);
                 },
               );
             }).toList(),
@@ -164,7 +200,7 @@ class _HomeState extends State<Home> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AllRecipesScreen()),
+                    MaterialPageRoute(builder: (context) => AllRecipesScreen(recipeService: widget.recipeService)),
                   );
                 },
                 child: Text(

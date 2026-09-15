@@ -11,7 +11,15 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
+  final TextEditingController _searchController = TextEditingController();
   late String? selectedTabOption;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -20,8 +28,9 @@ class _SearchState extends State<Search> {
         spacing: 10,
         children: [
           CustomSearchBar(
+            controller: _searchController,
             hintText: "Search recipes and users",
-            onSearch: () {},
+            onSearch: (query) {print(query);},
           ),
           OptionsTabs(options: ["Recipe","User"], changeValue: (String value) {
             setState(() {

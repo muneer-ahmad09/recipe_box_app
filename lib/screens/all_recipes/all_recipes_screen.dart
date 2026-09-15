@@ -1,189 +1,291 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_box_app/core/network/api_exception.dart';
+import 'package:recipe_box_app/core/services/recipe_service.dart';
 import 'package:recipe_box_app/screens/all_recipes/widgets/categories_tab.dart';
 
+import '../../models/recipe_card.dart';
+import '../../models/recipe_enums.dart';
 import '../../widgets/saved_recipe_card.dart';
 
-class AllRecipesScreen extends StatefulWidget{
-  const AllRecipesScreen({super.key});
+class AllRecipesScreen extends StatefulWidget {
+  final RecipeService recipeService;
 
-  static final List<Map<String, dynamic>> dummyRecipes = [
-    {
-      "recipeName": "Butter Chicken",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398",
-      "recipeTime": 45,
-      "recipeCategory": "Dinner",
-    },
-    {
-      "recipeName": "Pancakes",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1528207776546-365bb710ee93",
-      "recipeTime": 20,
-      "recipeCategory": "Breakfast",
-    },
-    {
-      "recipeName": "Margherita Pizza",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1574071318508-1cdbab80d002",
-      "recipeTime": 30,
-      "recipeCategory": "Dinner",
-    },
-    {
-      "recipeName": "Pasta Carbonara",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1473093295043-cdd812d0e601",
-      "recipeTime": 25,
-      "recipeCategory": "Dinner",
-    },
-    {
-      "recipeName": "Caesar Salad",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1550304943-4f24f54ddde9",
-      "recipeTime": 15,
-      "recipeCategory": "Lunch",
-    },
-    {
-      "recipeName": "Chocolate Cake",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1578985545062-69928b1d9587",
-      "recipeTime": 50,
-      "recipeCategory": "Dessert",
-    },
-    {
-      "recipeName": "Grilled Chicken",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1532550907401-a500c9a57435",
-      "recipeTime": 35,
-      "recipeCategory": "Dinner",
-    },
-    {
-      "recipeName": "French Toast",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1484723091739-30a097e8f929",
-      "recipeTime": 15,
-      "recipeCategory": "Breakfast",
-    },
-    {
-      "recipeName": "Chicken Tikka",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0",
-      "recipeTime": 40,
-      "recipeCategory": "Dinner",
-    },
-    {
-      "recipeName": "Mango Cheesecake",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1565958011703-44f9829ba187",
-      "recipeTime": 45,
-      "recipeCategory": "Dessert",
-    },
-    {
-      "recipeName": "Vegetable Stir Fry",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1512621776951-a57141f2eefd",
-      "recipeTime": 20,
-      "recipeCategory": "Lunch",
-    },
-    {
-      "recipeName": "Masala Dosa",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1589301760014-d929f3979dbc",
-      "recipeTime": 35,
-      "recipeCategory": "Breakfast",
-    },
-    {
-      "recipeName": "Tandoori Chicken",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b",
-      "recipeTime": 55,
-      "recipeCategory": "Dinner",
-    },
-    {
-      "recipeName": "Fruit Bowl",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea",
-      "recipeTime": 10,
-      "recipeCategory": "Breakfast",
-    },
-    {
-      "recipeName": "Paneer Butter Masala",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1631452180519-c014fe946bc7",
-      "recipeTime": 40,
-      "recipeCategory": "Dinner",
-    },
-    {
-      "recipeName": "Samosa",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1601050690597-df0568f70950",
-      "recipeTime": 30,
-      "recipeCategory": "Lunch",
-    },
-    {
-      "recipeName": "Red Velvet Cake",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1586788680434-30d324b2d46f",
-      "recipeTime": 55,
-      "recipeCategory": "Dessert",
-    },
-    {
-      "recipeName": "Chole Bhature",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1626132647523-66f5bf380027",
-      "recipeTime": 45,
-      "recipeCategory": "Lunch",
-    },
-    {
-      "recipeName": "Aloo Paratha",
-      "recipeImageUrl":
-      "https://images.unsplash.com/photo-1601050690117-94f5f6fa8bd7",
-      "recipeTime": 30,
-      "recipeCategory": "Breakfast",
-    },
-  ];
+  const AllRecipesScreen({super.key, required this.recipeService});
 
   @override
   State<AllRecipesScreen> createState() => _AllRecipesScreenState();
 }
 
 class _AllRecipesScreenState extends State<AllRecipesScreen> {
-  late String? category;
+  String selectedFilter = "Newest";
+  List<RecipeCard> recipes = [];
+  int currentPage = 1;
+  bool _hasMore = true;
+  int _requestId = 0;
+  bool _isInitialLoading = true;
+  bool _isLoadingMore = false;
+  String? errorMessage;
+  int? _failedPage;
+  final Set<String> _favoriteLoadingIds = {};
+
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    _onFilterChange(value: selectedFilter, page: 1);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isLoadingMore || !_hasMore) {
+      return;
+    }
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300) {
+      _onFilterChange(value: selectedFilter, page: currentPage + 1);
+    }
+  }
+
+  void _checkIfMorePagesNeeded() {
+    if (!_hasMore || _isLoadingMore) {
+      return;
+    }
+
+    if (_scrollController.hasClients &&
+        _scrollController.position.maxScrollExtent == 0) {
+      _onFilterChange(value: selectedFilter, page: currentPage + 1);
+    }
+  }
+
+  Future<void> _toggleFavorite(String recipeId) async {
+    if (_favoriteLoadingIds.contains(recipeId)) {
+      return;
+    }
+
+    try {
+      setState(() {
+        _favoriteLoadingIds.add(recipeId);
+      });
+      final result = await widget.recipeService.toggleFavorite(recipeId);
+      final recipeIndex = recipes.indexWhere((recipe) => recipe.id == recipeId);
+      if (recipeIndex != -1) {
+        setState(() {
+          recipes[recipeIndex] = recipes[recipeIndex].copyWith(
+            isFavorite: result.isFavorite,
+          );
+        });
+      }
+    } on ApiException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Something went wrong. Please try again.'),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _favoriteLoadingIds.remove(recipeId);
+        });
+      }
+    }
+  }
+
+  Future<void> _loadRecipes({
+    String sort = 'newest',
+    int? maxCookMinutes,
+    int page = 1,
+    required int requestId,
+  }) async {
+    setState(() {
+      if (page == 1) {
+        _isInitialLoading = true;
+      } else {
+        _isLoadingMore = true;
+      }
+
+      errorMessage = null;
+    });
+
+    try {
+      final apiRecipesList = await widget.recipeService.getRecipes(
+        page: page,
+        sort: sort,
+        maxCookMinutes: maxCookMinutes,
+      );
+      if (mounted && requestId == _requestId) {
+        setState(() {
+          if (page == 1) {
+            recipes = apiRecipesList.items;
+            _isInitialLoading = false;
+          } else {
+            recipes.addAll(apiRecipesList.items);
+            _isLoadingMore = false;
+          }
+          currentPage = apiRecipesList.page;
+          _hasMore = apiRecipesList.page < apiRecipesList.pages;
+          _failedPage = null;
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _checkIfMorePagesNeeded();
+        });
+      }
+    } on ApiException catch (e) {
+      if (mounted && requestId == _requestId) {
+        setState(() {
+          _failedPage = page;
+          errorMessage = e.message;
+          _isInitialLoading = false;
+          _isLoadingMore = false;
+        });
+      }
+    } catch (e) {
+      if (mounted && requestId == _requestId) {
+        setState(() {
+          errorMessage = 'Something went wrong. Please try again.';
+          _failedPage = page;
+          _isInitialLoading = false;
+          _isLoadingMore = false;
+        });
+      }
+    }
+  }
+
+  void _onFilterChange({required String value, required int page}) {
+    final requestId = ++_requestId;
+    switch (value) {
+      case "Newest":
+        _loadRecipes(sort: "newest", page: page, requestId: requestId);
+        break;
+      case "Popular":
+        _loadRecipes(sort: "popular", page: page, requestId: requestId);
+        break;
+      case "Under 30 Min":
+        _loadRecipes(maxCookMinutes: 30, page: page, requestId: requestId);
+        break;
+      default:
+        _loadRecipes(sort: "newest", page: page, requestId: requestId);
+        break;
+    }
+  }
+
+  Widget _buildRecipeSection() {
+    if (_isInitialLoading) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (errorMessage != null &&
+        errorMessage!.isNotEmpty &&
+        recipes.isEmpty) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(errorMessage!),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              _onFilterChange(value: selectedFilter, page: currentPage);
+            },
+            child: const Text('Retry'),
+          ),
+        ],
+      );
+    } else if (recipes.isEmpty) {
+      return const Center(child: Text("No recipes found"));
+    } else {
+      return ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.all(8.0),
+        itemCount:
+            recipes.length + (_isLoadingMore || errorMessage != null ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index == recipes.length) {
+            if (_isLoadingMore) {
+              return const Padding(
+                padding: EdgeInsets.all(16),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Text(errorMessage!),
+                  const SizedBox(height: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      _onFilterChange(
+                        value: selectedFilter,
+                        page: _failedPage!,
+                      );
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return SavedAndSearchRecipeCard(
+            recipeName: recipes[index].title,
+            recipeImageUrl: recipes[index].imageUrl,
+            recipeTime: recipes[index].cookMinutes,
+            recipeCategory: categoryEnumToString(recipes[index].category),
+            isFavorite: recipes[index].isFavorite,
+            onTapFavorite: () {
+              _toggleFavorite(recipes[index].id);
+            },
+            isFavoriteLoading: _favoriteLoadingIds.contains(recipes[index].id),
+          );
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('All Recipes'),
-      ),
+      appBar: AppBar(title: const Text('All Recipes')),
       body: Column(
         children: [
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: CategoriesTab(onCategoryChanged: (value){
-              category = value;
-            })
-          ),
+            child: CategoriesTab(
+              selectedCategory: selectedFilter,
+              onCategoryChanged: (value) {
+                if (_scrollController.hasClients) {
+                  _scrollController.jumpTo(0);
+                }
+                setState(() {
+                  _isInitialLoading = true;
+                  selectedFilter = value;
+                  currentPage = 1;
+                  _hasMore = true;
+                  _failedPage = null;
+                  errorMessage = null;
+                });
 
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(8.0),
-              itemCount: AllRecipesScreen.dummyRecipes.length,
-              itemBuilder: (context, index) {
-                return SavedAndSearchRecipeCard(
-                  recipeName: AllRecipesScreen.dummyRecipes[index]["recipeName"],
-                  recipeImageUrl: AllRecipesScreen.dummyRecipes[index]["recipeImageUrl"],
-                  recipeTime: AllRecipesScreen.dummyRecipes[index]["recipeTime"],
-                  recipeCategory: AllRecipesScreen.dummyRecipes[index]["recipeCategory"],
-                  showArrow: true,
-                  showBookmark: false,
-                  isBookmarked: false,
-                );
+                _onFilterChange(value: value, page: currentPage);
               },
             ),
           ),
+
+          Expanded(child: _buildRecipeSection()),
         ],
       ),
-
     );
   }
 }

@@ -16,7 +16,7 @@ class _AddItemState extends State<AddItem> {
   int cookingTime = 30;
   List<String> ingredients = [];
   List<String> steps = [];
-  late String category;
+  String? category;
   final TextEditingController recipeTextController = TextEditingController();
 
   @override

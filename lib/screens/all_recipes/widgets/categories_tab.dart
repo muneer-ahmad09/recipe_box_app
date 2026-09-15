@@ -4,8 +4,9 @@ import 'package:recipe_box_app/widgets/category_button.dart';
 class CategoriesTab extends StatefulWidget{
 
   final ValueChanged<String> onCategoryChanged;
+  final String selectedCategory;
 
-  const CategoriesTab({super.key,required this.onCategoryChanged});
+  const CategoriesTab({super.key,required this.onCategoryChanged, required this.selectedCategory});
 
   @override
   State<StatefulWidget> createState() => _CategoriesTabState();
@@ -18,7 +19,6 @@ class _CategoriesTabState extends State<CategoriesTab>{
   "Popular",
   "Under 30 Min"
   ];
-  String? selectedCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +27,8 @@ class _CategoriesTabState extends State<CategoriesTab>{
       children: categories.map((category){
         return CategoryButton(
             buttonName: category,
-            isActive: selectedCategory == category,
+            isActive: widget.selectedCategory == category,
             callback: (){
-              setState(() {
-                selectedCategory = category;
-              });
               widget.onCategoryChanged(category);
             }
         );

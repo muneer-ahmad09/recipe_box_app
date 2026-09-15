@@ -1,37 +1,89 @@
 import 'package:flutter/material.dart';
 
-class CustomSearchBar extends StatelessWidget {
+class CustomSearchBar extends StatefulWidget {
   const CustomSearchBar({
     super.key,
     required this.hintText,
     required this.onSearch,
+    required this.controller,
+    this.onClear,
     this.elevateSearchBar = false,
   });
 
   final bool elevateSearchBar;
   final String hintText;
-  final VoidCallback onSearch;
+  final ValueChanged<String> onSearch;
+  final VoidCallback? onClear;
+  final TextEditingController controller;
+
+  @override
+  State<CustomSearchBar> createState() => _CustomSearchBarState();
+}
+
+class _CustomSearchBarState extends State<CustomSearchBar> {
+  @override
+  void initState() {
+    super.initState();
+
+    widget.controller.addListener(_onTextChanged);
+  }
+
+  void _onTextChanged() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_onTextChanged);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SearchBar(
-      hintText: hintText,
+      controller: widget.controller,
+      hintText: widget.hintText,
+
+      trailing: widget.controller.text.isNotEmpty
+          ? [
+        IconButton(
+          onPressed: () {
+            widget.controller.clear();
+            widget.onClear?.call();
+          },
+          icon: Icon(
+            Icons.clear,
+            color: Colors.grey.shade500,
+          ),
+        ),
+      ]
+          : null,
+
       leading: IconButton(
         icon: const Icon(Icons.search_outlined),
-        onPressed: onSearch,
+        onPressed: () {
+          widget.onSearch(widget.controller.text);
+        },
       ),
+
       shape: const WidgetStatePropertyAll(
         RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(
+            Radius.circular(12),
+          ),
         ),
       ),
-      side:WidgetStatePropertyAll(
+
+      side: const WidgetStatePropertyAll(
         BorderSide(
           width: 1.5,
-            color: const Color(0xFFBDBDBD),
+          color: Color(0xFFBDBDBD),
         ),
       ),
-      elevation: elevateSearchBar ? const WidgetStatePropertyAll(2): const WidgetStatePropertyAll(0),
+
+      elevation: widget.elevateSearchBar
+          ? const WidgetStatePropertyAll(2)
+          : const WidgetStatePropertyAll(0),
     );
   }
 }
