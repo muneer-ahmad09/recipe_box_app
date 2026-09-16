@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:recipe_box_app/screens/add_item/widgets/add_image.dart';
 import 'package:recipe_box_app/screens/add_item/widgets/add_item_category.dart';
+import 'package:recipe_box_app/screens/add_item/widgets/add_item_difficulty.dart';
 import 'package:recipe_box_app/screens/add_item/widgets/cooking_time.dart';
 import 'package:recipe_box_app/screens/add_item/widgets/ingredient.dart';
 import 'package:recipe_box_app/screens/add_item/widgets/steps.dart';
@@ -9,15 +12,21 @@ class AddItem extends StatefulWidget {
   const AddItem({super.key});
 
   @override
-  State<AddItem> createState() => _AddItemState();
+  State<AddItem> createState() => AddItemState();
 }
 
-class _AddItemState extends State<AddItem> {
+class AddItemState extends State<AddItem> {
   int cookingTime = 30;
   List<String> ingredients = [];
   List<String> steps = [];
   String? category;
+  File? selectedImage;
+  String? difficulty;
   final TextEditingController recipeTextController = TextEditingController();
+
+  void saveRecipe() {
+    print("Save button pressed");
+  }
 
   @override
   void dispose() {
@@ -32,7 +41,12 @@ class _AddItemState extends State<AddItem> {
       child: Column(
         spacing: 14,
         children: [
-          const AddImage(),
+           AddImage(onImageSelected: (image){
+            setState(() {
+                selectedImage = image;
+
+            });
+          }),
           //Recipe Text Field
           TextField(
             controller: recipeTextController,
@@ -50,6 +64,11 @@ class _AddItemState extends State<AddItem> {
           AddItemCategory(
             onCategoryChanged: (value) {
                 category=value;
+            },
+          ),
+          AddItemDifficulty(
+            onDifficultyChanged: (value) {
+              difficulty = value;
             },
           ),
           CookingTime(

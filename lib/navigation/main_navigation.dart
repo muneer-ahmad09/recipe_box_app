@@ -21,6 +21,24 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
 
+  final GlobalKey<AddItemState> _addItemKey = GlobalKey<AddItemState>();
+  //
+  // Why do we need a GlobalKey?
+  //
+  // Currently MainNavigation has the AddItem widget:
+  //
+  // AddItem()
+  //
+  // But the saveRecipe() method will belong to:
+  //
+  // _AddItemState
+  //
+  // We need a way for MainNavigation to say:
+  //
+  // "Hey, AddItem — run your save method."
+  //
+  // A GlobalKey gives the parent access to the State object of a StatefulWidget.
+
   void _onDestinationSelected(int index) {
     setState(() {
       _selectedIndex = index;
@@ -30,7 +48,7 @@ class _MainNavigationState extends State<MainNavigation> {
   late final List<Widget> _screens = [
     Home( authManager: widget.authManager,recipeService: widget.recipeService,),
     Search(),
-    AddItem(),
+    AddItem(key: _addItemKey,),
     Bookmark(),
     Profile(),
   ];
@@ -106,7 +124,7 @@ class _MainNavigationState extends State<MainNavigation> {
           ),
           ),
           actions: [
-            TextButton(onPressed: () {  }, child: Text("Save"),)
+            TextButton(onPressed: () { _addItemKey.currentState?.saveRecipe(); }, child: Text("Save"),)
           ],
         );
 
