@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/features/add_recipe/add_recipe_controller.dart';
+import '../../../models/recipe_enums.dart';
 import '../../../widgets/category_button.dart';
 
-class AddItemDifficulty extends StatefulWidget {
-  final ValueChanged<String> onDifficultyChanged;
+class AddItemDifficulty extends ConsumerWidget {
+  const AddItemDifficulty({super.key});
 
-  const AddItemDifficulty({super.key, required this.onDifficultyChanged});
-
-  @override
-  State<AddItemDifficulty> createState() => _AddItemDifficultyState();
-}
-
-class _AddItemDifficultyState extends State<AddItemDifficulty> {
-  final List<String> difficulties = ["Easy", "Medium", "Hard"];
-
-  String? selectedDifficulty;
+  static const difficulties = [
+    Difficulty.easy,
+    Difficulty.medium,
+    Difficulty.hard,
+  ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final recipeState = ref.watch(addRecipeProvider);
     return SizedBox(
       width: double.infinity,
       child: Column(
@@ -34,15 +33,13 @@ class _AddItemDifficultyState extends State<AddItemDifficulty> {
             spacing: 10,
             children: difficulties.map((difficulty) {
               return CategoryButton(
-                buttonName: difficulty,
+                buttonName: difficultyEnumToString(difficulty),
                 callback: () {
-                  setState(() {
-                    selectedDifficulty = difficulty;
-                  });
-
-                  widget.onDifficultyChanged(difficulty);
+                  ref
+                      .read(addRecipeProvider.notifier)
+                      .updateDifficulty(difficulty);
                 },
-                isActive: selectedDifficulty == difficulty,
+                isActive: recipeState.difficulty == difficulty,
               );
             }).toList(),
           ),

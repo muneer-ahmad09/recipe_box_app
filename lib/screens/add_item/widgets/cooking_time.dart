@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_box_app/core/theme/app_colors.dart';
 
-class CookingTime extends StatefulWidget {
-  final int value;
-  final ValueChanged<int> onChanged;
+import '../../../core/features/add_recipe/add_recipe_controller.dart';
 
-  const CookingTime({super.key, required this.value, required this.onChanged});
+class CookingTime extends ConsumerStatefulWidget {
+  const CookingTime({super.key});
 
   @override
-  State<CookingTime> createState() => _CookingTimeState();
+  ConsumerState<CookingTime> createState() => _CookingTimeState();
 }
 
-class _CookingTimeState extends State<CookingTime> {
-  late final TextEditingController _cookingTimeController =
-      TextEditingController(text: widget.value.toString());
+class _CookingTimeState extends ConsumerState<CookingTime> {
+  final TextEditingController _cookingTimeController = TextEditingController(text: "30");
 
   @override
   void dispose() {
@@ -22,16 +21,8 @@ class _CookingTimeState extends State<CookingTime> {
   }
 
   @override
-  void didUpdateWidget(covariant CookingTime oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (oldWidget.value != widget.value) {
-      _cookingTimeController.text = widget.value.toString();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final recipeState = ref.watch(addRecipeProvider);
     return Column(
       spacing: 10,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,14 +47,18 @@ class _CookingTimeState extends State<CookingTime> {
               IconButton(
                 color: AppColors.petrol,
                 onPressed: () {
-                  setState(() {
-                    if (widget.value > 0) {
-                      widget.onChanged(widget.value - 1);
-                    }
-                  });
+                  if (recipeState.cookingTime > 0) {
+                    final newTime = recipeState.cookingTime - 1;
+
+                    ref
+                        .read(addRecipeProvider.notifier)
+                        .updateCookingTime(newTime);
+
+                    _cookingTimeController.text = newTime.toString();
+                  }
                 },
                 icon: Icon(Icons.remove_circle_outline),
-                iconSize:  30,
+                iconSize: 30,
               ),
               Container(
                 height: 65,
@@ -80,7 +75,6 @@ class _CookingTimeState extends State<CookingTime> {
                       width: 35,
                       child: TextField(
                         controller: _cookingTimeController,
-
                         onChanged: (value) {
                           final parsedValue = int.tryParse(value);
 
@@ -90,11 +84,15 @@ class _CookingTimeState extends State<CookingTime> {
                                 TextSelection.fromPosition(
                                   const TextPosition(offset: 1),
                                 );
-                            widget.onChanged(0);
+                            ref
+                                .read(addRecipeProvider.notifier)
+                                .updateCookingTime(0);
                             return;
                           }
 
-                          widget.onChanged(parsedValue);
+                          ref
+                              .read(addRecipeProvider.notifier)
+                              .updateCookingTime(parsedValue);
                         },
                         style: Theme.of(context).textTheme.labelLarge,
                         textAlign: TextAlign.center,
@@ -111,9 +109,13 @@ class _CookingTimeState extends State<CookingTime> {
               IconButton(
                 color: AppColors.petrol,
                 onPressed: () {
-                  setState(() {
-                    widget.onChanged(widget.value + 1);
-                  });
+                  final newTime = recipeState.cookingTime + 1;
+
+                  ref
+                      .read(addRecipeProvider.notifier)
+                      .updateCookingTime(newTime);
+
+                  _cookingTimeController.text = newTime.toString();
                 },
                 icon: Icon(Icons.add_circle_outline),
                 iconSize: 30,

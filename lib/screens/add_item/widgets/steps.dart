@@ -1,32 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Steps extends StatefulWidget {
-  final ValueChanged<List<String>> onStepsChanged;
+import '../../../core/features/add_recipe/add_recipe_controller.dart';
 
-  const Steps({super.key, required this.onStepsChanged});
+class Steps extends ConsumerStatefulWidget {
+
+  const Steps({super.key});
 
   @override
-  State<StatefulWidget> createState() => _StepsState();
+  ConsumerState<Steps> createState() => _StepsState();
 }
 
-class _StepsState extends State<Steps> {
+class _StepsState extends ConsumerState<Steps> {
   final List<TextEditingController> _stepControllers = [
     TextEditingController(),
   ];
 
   @override
   void dispose() {
-    super.dispose();
     for (final controller in _stepControllers) {
       controller.dispose();
     }
+    super.dispose();
   }
 
   void _notifySteps() {
     final steps = _stepControllers
         .map((controller) => controller.text)
         .toList();
-    widget.onStepsChanged(steps);
+    ref.read(addRecipeProvider.notifier).updateSteps(steps);
   }
 
   void _addStep() {
@@ -74,6 +76,9 @@ class _StepsState extends State<Steps> {
                   Expanded(
                     child: TextField(
                       controller: _stepControllers[i],
+                      onChanged: (_) {
+                        _notifySteps();
+                      },
                       decoration: InputDecoration(
                         hintText: "Step ${i + 1}",
                         hintStyle: TextStyle(color: Colors.grey),

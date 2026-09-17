@@ -1,20 +1,20 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-class AddImage extends StatefulWidget {
-  final ValueChanged<File> onImageSelected;
-  const AddImage({super.key, required this.onImageSelected});
+import '../../../core/features/add_recipe/add_recipe_controller.dart';
+
+class AddImage extends ConsumerStatefulWidget {
+  const AddImage({super.key});
 
   @override
-  State<AddImage> createState() => _AddImageState();
+  ConsumerState<AddImage> createState() => _AddImageState();
 }
 
-class _AddImageState extends State<AddImage> {
+class _AddImageState extends ConsumerState<AddImage> {
   final ImagePicker _picker = ImagePicker();
-
-  File? selectedImage;
 
   Future<void> showImagePicker() async {
     showModalBottomSheet(
@@ -35,10 +35,7 @@ class _AddImageState extends State<AddImage> {
 
                   if (image != null) {
                     final file = File(image.path);
-                    setState(() {
-                      selectedImage = file;
-                    });
-                    widget.onImageSelected(file);
+                   ref.read(addRecipeProvider.notifier).updateImage(file);
                   }
                 },
               ),
@@ -55,10 +52,7 @@ class _AddImageState extends State<AddImage> {
 
                   if (image != null) {
                     final file = File(image.path);
-                    setState(() {
-                      selectedImage = file;
-                    });
-                    widget.onImageSelected(file);
+                    ref.read(addRecipeProvider.notifier).updateImage(file);
                   }
                 },
               ),
@@ -71,6 +65,7 @@ class _AddImageState extends State<AddImage> {
 
   @override
   Widget build(BuildContext context) {
+    final recipeState = ref.watch(addRecipeProvider);
     return GestureDetector(
       onTap: showImagePicker,
       child: Container(
@@ -84,7 +79,7 @@ class _AddImageState extends State<AddImage> {
           ),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: selectedImage == null
+        child: recipeState.image == null
             ? const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -99,7 +94,7 @@ class _AddImageState extends State<AddImage> {
             : ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: Image.file(
-            selectedImage!,
+            recipeState.image!,
             width: double.infinity,
             fit: BoxFit.cover,
           ),

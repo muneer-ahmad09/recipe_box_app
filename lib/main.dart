@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_box_app/core/services/recipe_service.dart';
 
 import 'package:recipe_box_app/navigation/auth_navigation.dart';
@@ -9,6 +10,7 @@ import 'core/auth/auth_manager.dart';
 import 'core/auth/auth_state.dart';
 import 'core/dependencies/app_dependencies.dart';
 
+import 'core/features/providers.dart';
 import 'core/theme/app_theme.dart';
 
 void main() {
@@ -19,37 +21,36 @@ void main() {
     widgetsBinding: widgetsBinding,
   );
 
-  final dependencies = AppDependencies();
 
   runApp(
-    MyApp(
-      authManager: dependencies.authManager,
-      recipeService: dependencies.recipeService,
+     ProviderScope(
+      child: MyApp(),
     ),
   );
 }
 
-class MyApp extends StatefulWidget {
-  final AuthManager authManager;
-  final RecipeService recipeService;
+class MyApp extends ConsumerStatefulWidget {
 
-  const MyApp({super.key, required this.authManager, required this.recipeService});
+  const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
+  late final authManager = ref.read(authManagerProvider);
+
+
   @override
   void initState() {
     super.initState();
-    widget.authManager.initialize().then((_){
+    authManager.initialize().then((_){
       FlutterNativeSplash.remove();
     });
   }
 
   Future<void> _reInitialize() async{
-    await widget.authManager.initialize();
+    await authManager.initialize();
   }
 
   @override
@@ -58,16 +59,16 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       home: ListenableBuilder(
-        listenable: widget.authManager,
+        listenable: authManager,
 
         builder: (context, child) {
-          if(widget.authManager.initializationError!=null){
+          if(authManager.initializationError!=null){
             return Scaffold(
               body: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(widget.authManager.initializationError!),
+                    Text(authManager.initializationError!),
                     ElevatedButton(
                       onPressed: (){_reInitialize();},
                       child: Text('Retry'),
@@ -78,12 +79,12 @@ class _MyAppState extends State<MyApp> {
             );
           }
           else{
-            if (widget.authManager.authState == AuthState.initializing) {
+            if (authManager.authState == AuthState.initializing) {
               return const SizedBox.shrink(); // means render noting
-            } else if (widget.authManager.authState == AuthState.authenticated) {
-              return MainNavigation(authManager: widget.authManager,recipeService: widget.recipeService,);
+            } else if (authManager.authState == AuthState.authenticated) {
+              return MainNavigation();
             } else {
-              return AuthNavigation(authManager: widget.authManager,);
+              return AuthNavigation();
             }
           }
         },

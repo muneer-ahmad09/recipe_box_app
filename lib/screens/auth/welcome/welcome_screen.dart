@@ -6,8 +6,7 @@ import '../login/login_screen.dart';
 import '../register/register_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  final AuthManager authManager;
-  const WelcomeScreen({super.key, required this.authManager});
+  const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +51,7 @@ class WelcomeScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => RegisterScreen(authManager: authManager,)),
+                      MaterialPageRoute(builder: (context) => RegisterScreen()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -76,7 +75,7 @@ class WelcomeScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginScreen(authManager: authManager,)),
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
                     );
                   },
                   child: Text(

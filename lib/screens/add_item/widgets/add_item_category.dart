@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/features/add_recipe/add_recipe_controller.dart';
+import '../../../models/recipe_enums.dart';
 import '../../../widgets/category_button.dart';
 
-class AddItemCategory extends StatefulWidget {
+class AddItemCategory extends ConsumerWidget {
+  const AddItemCategory({super.key});
 
-  final ValueChanged<String> onCategoryChanged;
+  static const categories = [
+    Category.breakfast,
+    Category.lunch,
+    Category.dinner,
+    Category.dessert,
+  ];
 
-  const AddItemCategory({super.key, required this.onCategoryChanged});
-
-  @override
-  State<AddItemCategory> createState() => _AddItemCategoryState();
-}
-
-class _AddItemCategoryState extends State<AddItemCategory> {
-  final List<String> categories = ["Dinner", "Breakfast", "Lunch", "Dessert"];
-
-  String? selectedCategory;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final recipeState = ref.watch(addRecipeProvider);
     return SizedBox(
       width: double.infinity,
       child: Column(
@@ -34,14 +34,11 @@ class _AddItemCategoryState extends State<AddItemCategory> {
             spacing: 10,
             children: categories.map((category) {
               return CategoryButton(
-                buttonName: category,
+                buttonName: categoryEnumToString(category),
                 callback: () {
-                  setState(() {
-                    selectedCategory = category;
-                  });
-                  widget.onCategoryChanged(category);
+                  ref.read(addRecipeProvider.notifier).updateCategory(category);
                 },
-                isActive: selectedCategory == category,
+                isActive: recipeState.category == category,
               );
             }).toList(),
           ),
@@ -49,4 +46,8 @@ class _AddItemCategoryState extends State<AddItemCategory> {
       ),
     );
   }
+
+
 }
+
+

@@ -75,6 +75,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_box_app/screens/setting/widgets/logout_dialog.dart';
 import 'package:recipe_box_app/screens/setting/widgets/section_title.dart';
 import 'package:recipe_box_app/screens/setting/widgets/settings_container.dart';
@@ -82,14 +83,16 @@ import 'package:recipe_box_app/screens/setting/widgets/settings_divider.dart';
 import 'package:recipe_box_app/screens/setting/widgets/settings_tile.dart';
 
 import '../../core/auth/auth_manager.dart';
+import '../../core/features/providers.dart';
 
-class SettingScreen extends StatelessWidget {
-  final AuthManager authManager;
-  const SettingScreen({super.key, required this.authManager});
+class SettingScreen extends ConsumerWidget {
+  const SettingScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+
+    final authManager = ref.read(authManagerProvider);
 
     return Scaffold(
       appBar: AppBar(

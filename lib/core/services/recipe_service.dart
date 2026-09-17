@@ -1,6 +1,8 @@
 import '../../models/favorite_api_model.dart';
 import '../../models/page.dart';
 import '../../models/recipe_card.dart';
+import '../../models/recipe_create_request.dart';
+import '../../models/recipe_detail.dart';
 import '../network/api_client.dart';
 
 class RecipeService {
@@ -28,4 +30,9 @@ class RecipeService {
   Future<FavoriteApiModel> toggleFavorite(String recipeId) {
     return apiClient.toggleFavorite(recipeId);
   }
+
+  Future<RecipeDetail> createRecipe(RecipeCreateRequest request) {
+    return apiClient.createRecipe(request);
+  }
+
 }

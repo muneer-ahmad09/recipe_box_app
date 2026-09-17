@@ -3,8 +3,11 @@ import 'package:recipe_box_app/core/network/auth_interceptor.dart';
 import 'package:recipe_box_app/models/favorite_api_model.dart';
 import 'package:recipe_box_app/models/token_pair.dart';
 
+import '../../models/cloudinary_signature.dart';
 import '../../models/page.dart';
 import '../../models/recipe_card.dart';
+import '../../models/recipe_create_request.dart';
+import '../../models/recipe_detail.dart';
 import '../../models/user.dart';
 import 'api_config.dart';
 import 'api_exception.dart';
@@ -204,5 +207,23 @@ class ApiClient {
       'POST',
     );
     return FavoriteApiModel.fromJson(response.data);
+  }
+  Future<RecipeDetail> createRecipe(RecipeCreateRequest request) async {
+    final response = await _request(
+      '/recipes',
+      'POST',
+      data: request.toJson(),
+      contentType: Headers.jsonContentType,
+    );
+
+    return RecipeDetail.fromJson(response.data);
+  }
+  Future<CloudinarySignature> getCloudinarySignature() async {
+    final response = await _request(
+      '/cloudinary/signature',
+      'POST',
+    );
+
+    return CloudinarySignature.fromJson(response.data);
   }
 }

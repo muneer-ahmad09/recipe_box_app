@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_box_app/core/auth/auth_manager.dart';
 import 'package:recipe_box_app/core/theme/app_colors.dart';
 import 'package:recipe_box_app/screens/all_recipes/all_recipes_screen.dart';
@@ -8,25 +9,23 @@ import 'package:recipe_box_app/screens/recipe_page/recipe_page.dart';
 import 'package:recipe_box_app/widgets/category_button.dart';
 import 'package:recipe_box_app/widgets/custom_search_bar.dart';
 
+import '../../core/features/providers.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/services/recipe_service.dart';
 import '../../models/recipe_card.dart';
 
-class Home extends StatefulWidget {
-  final AuthManager authManager;
-  final RecipeService recipeService;
+class Home extends ConsumerStatefulWidget {
 
   const Home({
     super.key,
-    required this.authManager,
-    required this.recipeService,
   });
 
   @override
-  State<Home> createState() => _HomeState();
+  ConsumerState<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends ConsumerState<Home> {
+  late final recipeService = ref.read(recipeServiceProvider);
   final TextEditingController _searchController = TextEditingController();
   List<RecipeCard> recipes = [];
   int _requestId = 0;
@@ -34,7 +33,7 @@ class _HomeState extends State<Home> {
   bool _isLoading = true;
   String? errorMessage;
 
-  String? selectedCategory = "All";
+  String selectedCategory = "All";
   String? searchQuery;
   List<String> categories = ["All", "Breakfast", "Dinner"];
 
@@ -47,7 +46,7 @@ class _HomeState extends State<Home> {
     });
 
     try {
-      final page = await widget.recipeService.getRecipes(
+      final page = await recipeService.getRecipes(
         category: category == "All" ? null : category,
         search: search,
       );
@@ -139,6 +138,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    final authManager = ref.read(authManagerProvider);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.only(left: 9.0, right: 9.0, top: 7.0),
@@ -147,7 +147,7 @@ class _HomeState extends State<Home> {
         spacing: 18,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Header(user: widget.authManager.user!),
+          Header(user: authManager.user!),
         CustomSearchBar(
           controller: _searchController,
           elevateSearchBar: true,
@@ -200,7 +200,7 @@ class _HomeState extends State<Home> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AllRecipesScreen(recipeService: widget.recipeService)),
+                    MaterialPageRoute(builder: (context) => AllRecipesScreen()),
                   );
                 },
                 child: Text(

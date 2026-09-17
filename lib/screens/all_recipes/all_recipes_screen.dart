@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_box_app/core/network/api_exception.dart';
-import 'package:recipe_box_app/core/services/recipe_service.dart';
 import 'package:recipe_box_app/screens/all_recipes/widgets/categories_tab.dart';
 
+import '../../core/features/providers.dart';
 import '../../models/recipe_card.dart';
 import '../../models/recipe_enums.dart';
 import '../../widgets/saved_recipe_card.dart';
 
-class AllRecipesScreen extends StatefulWidget {
-  final RecipeService recipeService;
+class AllRecipesScreen extends ConsumerStatefulWidget {
 
-  const AllRecipesScreen({super.key, required this.recipeService});
+  const AllRecipesScreen({super.key});
 
   @override
-  State<AllRecipesScreen> createState() => _AllRecipesScreenState();
+  ConsumerState<AllRecipesScreen> createState() => _AllRecipesScreenState();
 }
 
-class _AllRecipesScreenState extends State<AllRecipesScreen> {
+class _AllRecipesScreenState extends ConsumerState<AllRecipesScreen> {
   String selectedFilter = "Newest";
   List<RecipeCard> recipes = [];
   int currentPage = 1;
@@ -27,6 +27,8 @@ class _AllRecipesScreenState extends State<AllRecipesScreen> {
   String? errorMessage;
   int? _failedPage;
   final Set<String> _favoriteLoadingIds = {};
+
+  late final recipeService = ref.read(recipeServiceProvider);
 
   final ScrollController _scrollController = ScrollController();
 
@@ -74,7 +76,7 @@ class _AllRecipesScreenState extends State<AllRecipesScreen> {
       setState(() {
         _favoriteLoadingIds.add(recipeId);
       });
-      final result = await widget.recipeService.toggleFavorite(recipeId);
+      final result = await recipeService.toggleFavorite(recipeId);
       final recipeIndex = recipes.indexWhere((recipe) => recipe.id == recipeId);
       if (recipeIndex != -1) {
         setState(() {
@@ -122,7 +124,7 @@ class _AllRecipesScreenState extends State<AllRecipesScreen> {
     });
 
     try {
-      final apiRecipesList = await widget.recipeService.getRecipes(
+      final apiRecipesList = await recipeService.getRecipes(
         page: page,
         sort: sort,
         maxCookMinutes: maxCookMinutes,

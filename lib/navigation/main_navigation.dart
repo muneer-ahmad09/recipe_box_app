@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:recipe_box_app/core/auth/auth_manager.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../core/services/recipe_service.dart';
+import '../core/features/add_recipe/add_recipe_controller.dart';
+import '../core/features/add_recipe/add_recipe_state.dart';
 import '../screens/add_item/add_item.dart';
 import '../screens/bookmark/bookmark.dart';
 import '../screens/home/home.dart';
@@ -9,35 +10,17 @@ import '../screens/profile/profile.dart';
 import '../screens/search/search.dart';
 import '../screens/setting/setting_screen.dart';
 
-class MainNavigation extends StatefulWidget {
-  final AuthManager authManager;
-  final RecipeService recipeService;
-  const MainNavigation({super.key, required this.authManager, required this.recipeService});
+class MainNavigation extends ConsumerStatefulWidget {
+
+  const MainNavigation({super.key});
 
   @override
-  State<StatefulWidget> createState() => _MainNavigationState();
+  ConsumerState<MainNavigation> createState() => _MainNavigationState();
 }
 
-class _MainNavigationState extends State<MainNavigation> {
+class _MainNavigationState extends ConsumerState<MainNavigation> {
   int _selectedIndex = 0;
 
-  final GlobalKey<AddItemState> _addItemKey = GlobalKey<AddItemState>();
-  //
-  // Why do we need a GlobalKey?
-  //
-  // Currently MainNavigation has the AddItem widget:
-  //
-  // AddItem()
-  //
-  // But the saveRecipe() method will belong to:
-  //
-  // _AddItemState
-  //
-  // We need a way for MainNavigation to say:
-  //
-  // "Hey, AddItem — run your save method."
-  //
-  // A GlobalKey gives the parent access to the State object of a StatefulWidget.
 
   void _onDestinationSelected(int index) {
     setState(() {
@@ -46,9 +29,9 @@ class _MainNavigationState extends State<MainNavigation> {
   }
 
   late final List<Widget> _screens = [
-    Home( authManager: widget.authManager,recipeService: widget.recipeService,),
+    Home(),
     Search(),
-    AddItem(key: _addItemKey,),
+    AddItem(),
     Bookmark(),
     Profile(),
   ];
@@ -59,7 +42,7 @@ class _MainNavigationState extends State<MainNavigation> {
       onGenerateRoute: (settings) {
         return MaterialPageRoute(
           builder: (context) =>Scaffold(
-            appBar: _getAppBar(context,widget.authManager),
+            appBar: _getAppBar(context),
             body: SafeArea(child: _screens[_selectedIndex]),
             bottomNavigationBar: NavigationBar(
               selectedIndex: _selectedIndex,
@@ -98,7 +81,7 @@ class _MainNavigationState extends State<MainNavigation> {
     );
   }
 
-  PreferredSizeWidget _getAppBar(BuildContext context,AuthManager authManager){
+  PreferredSizeWidget _getAppBar(BuildContext context){
     switch(_selectedIndex){
       case 0 :
         return AppBar(
@@ -124,7 +107,35 @@ class _MainNavigationState extends State<MainNavigation> {
           ),
           ),
           actions: [
-            TextButton(onPressed: () { _addItemKey.currentState?.saveRecipe(); }, child: Text("Save"),)
+            Consumer(
+              builder: (context, ref, child) {
+                final status = ref.watch(
+                  addRecipeProvider.select((state) => state.status),
+                );
+
+                return TextButton(
+                  onPressed: status == AddRecipeStatus.saving
+                      ? null
+                      : () async {
+                    final recipe =
+                    await ref.read(addRecipeProvider.notifier).saveRecipe();
+
+                    if (recipe == null) {
+                      return;
+                    }
+
+                    // Success handling will come next.
+                  },
+                  child: status == AddRecipeStatus.saving
+                      ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(),
+                  )
+                      : const Text("Save"),
+                );
+              },
+            ),
           ],
         );
 
@@ -147,7 +158,7 @@ class _MainNavigationState extends State<MainNavigation> {
             IconButton(onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SettingScreen(authManager: authManager,)),
+                MaterialPageRoute(builder: (context) => SettingScreen()),
               );
             }, icon: Icon(Icons.settings))
           ],

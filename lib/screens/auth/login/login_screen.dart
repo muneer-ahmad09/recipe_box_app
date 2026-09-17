@@ -1,20 +1,24 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_box_app/core/auth/auth_manager.dart';
 import 'package:recipe_box_app/core/theme/app_colors.dart';
 import 'package:recipe_box_app/screens/auth/register/register_screen.dart';
 
+import '../../../core/features/providers.dart';
 
-class LoginScreen extends StatefulWidget {
-  final AuthManager authManager;
 
-  const LoginScreen({super.key, required this.authManager});
+class LoginScreen extends ConsumerStatefulWidget {
+
+  const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  late final authManager = ref.read(authManagerProvider);
+
   final _formKey = GlobalKey<FormState>();
 
   final _emailController = TextEditingController();
@@ -38,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
     try {
-      await widget.authManager.login(
+      await authManager.login(
         _emailController.text,
         _passwordController.text,
       );
@@ -195,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            RegisterScreen(authManager: widget.authManager),
+                            RegisterScreen(),
                       ),
                     );
                   },

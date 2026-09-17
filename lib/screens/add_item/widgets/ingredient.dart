@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Ingredient extends StatefulWidget {
-  final ValueChanged<List<String>> onIngredientsChanged;
+import '../../../core/features/add_recipe/add_recipe_controller.dart';
 
-  const Ingredient({super.key, required this.onIngredientsChanged});
+class Ingredient extends ConsumerStatefulWidget {
+
+  const Ingredient({super.key});
 
   @override
-  State<Ingredient> createState() => _IngredientState();
+  ConsumerState<Ingredient> createState() => _IngredientState();
 }
 
-class _IngredientState extends State<Ingredient> {
+class _IngredientState extends ConsumerState<Ingredient> {
   final List<TextEditingController> _ingredientControllers = [
     TextEditingController(),
   ];
@@ -26,7 +28,7 @@ class _IngredientState extends State<Ingredient> {
     final ingredients = _ingredientControllers
         .map((controller) => controller.text)
         .toList();
-    widget.onIngredientsChanged(ingredients);
+    ref.read(addRecipeProvider.notifier).updateIngredients(ingredients);
   }
 
   void _addIngredient() {
