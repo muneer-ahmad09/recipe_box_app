@@ -26,7 +26,7 @@ class RecipePageCard extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(19, 16, 19, 20),
+        padding: const EdgeInsets.fromLTRB(19, 24, 19, 20), // top bumped 16->24: gives the title breathing room above the image seam
         child: Column(
           mainAxisSize: MainAxisSize.min, // size to content — no fixed height to overflow if the title wraps to 2 lines
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -7,6 +7,7 @@ import '../network/auth_interceptor.dart';
 import '../network/refresh_client.dart';
 import '../services/cloudinary_service.dart';
 import '../services/recipe_service.dart';
+import '../services/search_service.dart';
 import '../storage/token_storage.dart';
 import 'add_recipe/add_recipe_validation.dart';
 
@@ -75,4 +76,10 @@ final cloudinaryServiceProvider = Provider<CloudinaryService>((ref) {
     apiClient: apiClient,
     dio: ref.read(cloudinaryDioProvider),
   );
+});
+
+final searchServiceProvider = Provider<SearchService>((ref) {
+  final apiClient = ref.read(apiClientProvider);
+
+  return SearchService(apiClient);
 });

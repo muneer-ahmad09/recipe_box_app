@@ -123,6 +123,8 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                     if (recipe == null) {
                       return;
                     }
+                    ref.read(addRecipeProvider.notifier).reset();
+
 
                     // Success handling will come next.
                   },

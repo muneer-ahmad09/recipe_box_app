@@ -27,4 +27,21 @@ class Page<T> {
       pages: json['pages'],
     );
   }
+
+  Page<T> copyWith({
+    List<T>? items,
+    int? total,
+    int? page,
+    int? pageSize,
+    int? pages,}
+      ){
+    return Page<T>(
+      items: items ?? this.items,
+      total: total ?? this.total,
+      page: page ?? this.page,
+      pageSize: pageSize ?? this.pageSize,
+      pages: pages ?? this.pages,
+    );
+  }
+
 }

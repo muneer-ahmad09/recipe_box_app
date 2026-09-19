@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:recipe_box_app/core/network/auth_interceptor.dart';
 import 'package:recipe_box_app/models/favorite_api_model.dart';
 import 'package:recipe_box_app/models/token_pair.dart';
+import 'package:recipe_box_app/models/user_card_model.dart';
 
 import '../../models/cloudinary_signature.dart';
 import '../../models/page.dart';
@@ -172,14 +173,18 @@ class ApiClient {
   //Recipes
 
   Future<Page<RecipeCard>> getRecipes({
-    int page=1,
-    int pageSize=10,
+    int page = 1,
+    int pageSize = 10,
     String? category,
     String? search,
-    String sort='newest',
+    String? sort,
     int? maxCookMinutes,
   }) async {
-    final queryParameters = {'page': page, 'page_size': pageSize, 'sort': sort};
+    final Map<String, dynamic> queryParameters = {'page': page, 'page_size': pageSize};
+
+    if(sort != null){
+      queryParameters['sort'] = sort;
+    }
 
     if (category != null) {
       queryParameters['category'] = category;
@@ -191,7 +196,6 @@ class ApiClient {
       queryParameters['max_cook_minutes'] = maxCookMinutes;
     }
 
-
     final response = await _request(
       '/recipes',
       'GET',
@@ -202,12 +206,10 @@ class ApiClient {
   }
 
   Future<FavoriteApiModel> toggleFavorite(String recipeId) async {
-    final response = await _request(
-      '/recipes/$recipeId/favorite',
-      'POST',
-    );
+    final response = await _request('/recipes/$recipeId/favorite', 'POST');
     return FavoriteApiModel.fromJson(response.data);
   }
+
   Future<RecipeDetail> createRecipe(RecipeCreateRequest request) async {
     final response = await _request(
       '/recipes',
@@ -218,12 +220,23 @@ class ApiClient {
 
     return RecipeDetail.fromJson(response.data);
   }
+
   Future<CloudinarySignature> getCloudinarySignature() async {
-    final response = await _request(
-      '/cloudinary/signature',
-      'POST',
-    );
+    final response = await _request('/cloudinary/signature', 'POST');
 
     return CloudinarySignature.fromJson(response.data);
+  }
+
+  Future<Page<UserCardModel>> searchUsers({
+    required String query,
+    int page = 1,
+    int pageSize = 10,
+  }) async{
+    final response = await _request(
+      '/users/search',
+      'GET',
+      queryParameters: {'q': query, 'page': page, 'page_size': pageSize},
+    );
+    return Page<UserCardModel>.fromJson(response.data, UserCardModel.fromJson);
   }
 }

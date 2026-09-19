@@ -15,7 +15,7 @@ class RecipeService {
     int pageSize=10,
     String? category,
     String? search,
-    String sort='newest',
+    String? sort,
     int? maxCookMinutes,
   }) {
     return apiClient.getRecipes(
