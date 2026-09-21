@@ -6,6 +6,7 @@ class UserCard extends StatelessWidget {
   final String? imageUrl;
 
   final bool isFollowing;
+  final bool isFollowLoading;
   final bool showFollowButton;
 
   final VoidCallback? onTap;
@@ -17,6 +18,7 @@ class UserCard extends StatelessWidget {
     required this.username,
     this.imageUrl,
     this.isFollowing = false,
+    this.isFollowLoading = false,
     this.showFollowButton = true,
     this.onTap,
     this.onFollowChanged,
@@ -69,6 +71,7 @@ class UserCard extends StatelessWidget {
         trailing: showFollowButton
             ? _FollowButton(
           isFollowing: isFollowing,
+          isLoading: isFollowLoading,
           onPressed: onFollowChanged,
         )
             : null,
@@ -79,17 +82,20 @@ class UserCard extends StatelessWidget {
 
 class _FollowButton extends StatelessWidget {
   final bool isFollowing;
+  final bool isLoading;
   final VoidCallback? onPressed;
 
   const _FollowButton({
     required this.isFollowing,
+    required this.isLoading,
     required this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      onPressed: onPressed,
+      onPressed: isLoading ? null : onPressed,
+
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(90, 40),
         padding: const EdgeInsets.symmetric(
@@ -99,7 +105,16 @@ class _FollowButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      child: Text(
+
+      child: isLoading
+          ? const SizedBox(
+        width: 18,
+        height: 18,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+        ),
+      )
+          : Text(
         isFollowing ? 'Following' : 'Follow',
         style: const TextStyle(
           fontWeight: FontWeight.w600,

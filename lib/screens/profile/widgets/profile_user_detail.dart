@@ -1,9 +1,23 @@
 import 'package:flutter/material.dart';
+
 import 'package:recipe_box_app/core/theme/app_colors.dart';
-import 'package:recipe_box_app/screens/profile/widgets/stat.dart';
+import 'package:recipe_box_app/models/user_profile_model.dart';
+
+import 'stat.dart';
 
 class ProfileUserDetail extends StatelessWidget {
-  const ProfileUserDetail({super.key});
+  final UserProfileModel profile;
+  final bool isOwnProfile;
+  final bool isFollowLoading;
+  final VoidCallback? onFollowChanged;
+
+  const ProfileUserDetail({
+    super.key,
+    required this.profile,
+    required this.isOwnProfile,
+    this.isFollowLoading = false,
+    this.onFollowChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,61 +31,91 @@ class ProfileUserDetail extends StatelessWidget {
         children: [
           Row(
             children: [
-              // Profile picture
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 42,
                 backgroundColor: Colors.grey,
-                child: Icon(
+                backgroundImage: profile.avatarUrl != null
+                    ? NetworkImage(profile.avatarUrl!)
+                    : null,
+                child: profile.avatarUrl == null
+                    ? const Icon(
                   Icons.person,
                   size: 45,
                   color: Colors.white,
-                ),
+                )
+                    : null,
               ),
+
               const SizedBox(width: 24),
-              // User details
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Muneer Ahmad',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold
-                      )
+                      profile.fullName,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium
+                          ?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
+
+                    const SizedBox(height: 4),
+
                     Text(
-                      'Flutter Developer\n'
-                          'React Native • FastAPI • Spring Boot\n'
-                          'Building things that actually work 🚀',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontSize: 14.0
-                      )
+                      '@${profile.username}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(
+                        color: Colors.grey.shade600,
+                      ),
                     ),
 
+                    if (profile.bio != null &&
+                        profile.bio!.trim().isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        profile.bio!,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ],
-
-                )
+                ),
               ),
             ],
           ),
-          SizedBox(height: 25,),
+
+          const SizedBox(height: 25),
+
           Container(
             width: 300,
             decoration: BoxDecoration(
               color: AppColors.cardWhite,
               borderRadius: BorderRadius.circular(18),
-              border: BoxBorder.all(
+              border: Border.all(
                 color: Colors.grey,
                 width: 2,
-              )
+              ),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Stat(value: '5', label: 'Recipes',),
-                  SizedBox(
+                  Stat(
+                    value: profile.recipeCount.toString(),
+                    label: 'Recipes',
+                  ),
+
+                  const SizedBox(
                     height: 40,
                     child: VerticalDivider(
                       thickness: 2,
@@ -79,8 +123,13 @@ class ProfileUserDetail extends StatelessWidget {
                       color: Colors.grey,
                     ),
                   ),
-                  Stat(value: '1.2k', label: 'Followers'),
-                  SizedBox(
+
+                  Stat(
+                    value: profile.followerCount.toString(),
+                    label: 'Followers',
+                  ),
+
+                  const SizedBox(
                     height: 40,
                     child: VerticalDivider(
                       thickness: 2,
@@ -88,11 +137,50 @@ class ProfileUserDetail extends StatelessWidget {
                       color: Colors.grey,
                     ),
                   ),
-                  Stat(value: '340', label: 'Following'),
+
+                  Stat(
+                    value: profile.followingCount.toString(),
+                    label: 'Following',
+                  ),
                 ],
               ),
             ),
-          )
+          ),
+
+          // Follow button only for other users.
+          if (!isOwnProfile) ...[
+            const SizedBox(height: 20),
+
+            SizedBox(
+              width: 160,
+              height: 44,
+              child: OutlinedButton(
+                onPressed:
+                isFollowLoading ? null : onFollowChanged,
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: isFollowLoading
+                    ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                  ),
+                )
+                    : Text(
+                  profile.isFollowing
+                      ? 'Following'
+                      : 'Follow',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

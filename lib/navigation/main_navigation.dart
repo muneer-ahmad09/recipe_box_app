@@ -66,12 +66,12 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                 NavigationDestination(
                   icon: Icon(Icons.bookmark_outline_rounded),
                   selectedIcon: Icon(Icons.bookmark_rounded),
-                  label: "Home",
+                  label: "Saved",
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.person_3_outlined),
                   selectedIcon: Icon(Icons.person_3_rounded),
-                  label: "Home",
+                  label: "Profile",
                 ),
               ],
             ),

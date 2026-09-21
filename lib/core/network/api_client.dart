@@ -5,11 +5,13 @@ import 'package:recipe_box_app/models/token_pair.dart';
 import 'package:recipe_box_app/models/user_card_model.dart';
 
 import '../../models/cloudinary_signature.dart';
+import '../../models/follow_api_model.dart';
 import '../../models/page.dart';
 import '../../models/recipe_card.dart';
 import '../../models/recipe_create_request.dart';
 import '../../models/recipe_detail.dart';
 import '../../models/user.dart';
+import '../../models/user_profile_model.dart';
 import 'api_config.dart';
 import 'api_exception.dart';
 
@@ -239,4 +241,61 @@ class ApiClient {
     );
     return Page<UserCardModel>.fromJson(response.data, UserCardModel.fromJson);
   }
+
+  Future<FollowApiModel> toggleFollow(String userId) async {
+    final response = await _request(
+      '/users/$userId/follow',
+      'POST',
+    );
+
+    return FollowApiModel.fromJson(response.data);
+  }
+
+  Future<UserProfileModel> getUserProfile(String userId) async {
+    final response = await _request(
+      '/users/$userId',
+      'GET',
+    );
+
+    return UserProfileModel.fromJson(response.data);
+  }
+
+
+  Future<Page<RecipeCard>> getMyRecipes({
+    int page = 1,
+    int pageSize = 10,
+  }) async {
+    final response = await _request(
+      '/recipes/mine',
+      'GET',
+      queryParameters: {
+        'page': page,
+        'page_size': pageSize,
+      },
+    );
+    return Page<RecipeCard>.fromJson(
+      response.data,
+      RecipeCard.fromJson,
+    );
+  }
+
+  Future<Page<RecipeCard>> getSavedRecipes({
+    int page = 1,
+    int pageSize = 10,
+  }) async {
+    final response = await _request(
+      '/recipes/saved',
+      'GET',
+      queryParameters: {
+        'page': page,
+        'page_size': pageSize,
+      },
+    );
+
+    return Page<RecipeCard>.fromJson(
+      response.data,
+      RecipeCard.fromJson,
+    );
+  }
+
 }

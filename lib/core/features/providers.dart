@@ -8,6 +8,7 @@ import '../network/refresh_client.dart';
 import '../services/cloudinary_service.dart';
 import '../services/recipe_service.dart';
 import '../services/search_service.dart';
+import '../services/user_services.dart';
 import '../storage/token_storage.dart';
 import 'add_recipe/add_recipe_validation.dart';
 
@@ -82,4 +83,10 @@ final searchServiceProvider = Provider<SearchService>((ref) {
   final apiClient = ref.read(apiClientProvider);
 
   return SearchService(apiClient);
+});
+
+final userServicesProvider = Provider<UserServices>((ref) {
+  return UserServices(
+    ref.read(apiClientProvider),
+  );
 });

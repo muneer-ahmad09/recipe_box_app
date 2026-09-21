@@ -2,7 +2,10 @@ import 'package:flutter/material.dart' hide SearchController;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_box_app/core/features/favorites/favorite_controller.dart';
 import 'package:recipe_box_app/core/features/favorites/favorite_state.dart';
+import 'package:recipe_box_app/core/features/providers.dart';
 
+import '../../core/features/follow/follow_controller.dart';
+import '../../core/features/follow/follow_state.dart';
 import '../../core/features/search/search_controller.dart';
 import '../../core/features/search/search_state.dart';
 import '../../models/recipe_enums.dart';
@@ -10,6 +13,7 @@ import '../../widgets/custom_search_bar.dart';
 import '../../widgets/options_tab.dart';
 import '../../widgets/saved_recipe_card.dart';
 import '../../widgets/user_card.dart';
+import '../profile/profile.dart';
 
 class Search extends ConsumerStatefulWidget {
   const Search({super.key});
@@ -36,17 +40,29 @@ class _SearchState extends ConsumerState<Search> {
       return;
     }
 
-    ref.read(searchProvider.notifier).updateFavorite(
-      recipeId,
-      result.isFavorite,
-    );
+    ref
+        .read(searchProvider.notifier)
+        .updateFavorite(recipeId, result.isFavorite);
+  }
+
+  Future<void> _toggleFollow(String userId) async {
+    final result = await ref.read(followProvider.notifier).toggleFollow(userId);
+
+    if (result == null || !mounted) {
+      return;
+    }
+
+    ref.read(searchProvider.notifier).updateFollowing(userId, result);
   }
 
   Widget _buildSearchResultSection(
     SearchState searchState,
     SearchController searchController,
-      FavoriteState favoriteState,
+    FavoriteState favoriteState,
+    FollowState followState,
   ) {
+    final authManager = ref.read(authManagerProvider);
+    final currentUser = authManager.user;
     if (searchState.status == SearchStatus.loading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -82,9 +98,7 @@ class _SearchState extends ConsumerState<Search> {
             onTapFavorite: () {
               _toggleFavorite(recipe.id);
             },
-            isFavoriteLoading: favoriteState.loadingIds.contains(
-              recipe.id,
-            ),
+            isFavoriteLoading: favoriteState.loadingIds.contains(recipe.id),
           );
         },
       );
@@ -92,17 +106,13 @@ class _SearchState extends ConsumerState<Search> {
 
     // User results will come here.
     if (searchState.userResults == null) {
-      return const Center(
-        child: Text('Search for users'),
-      );
+      return const Center(child: Text('Search for users'));
     }
 
     final users = searchState.userResults!.items;
 
     if (users.isEmpty) {
-      return const Center(
-        child: Text('No users found'),
-      );
+      return const Center(child: Text('No users found'));
     }
 
     return ListView.builder(
@@ -114,21 +124,51 @@ class _SearchState extends ConsumerState<Search> {
           name: user.fullName,
           username: user.username,
           imageUrl: user.avatarUrl,
+          isFollowing: user.isFollowing,
+          isFollowLoading: followState.loadingIds.contains(user.id),
+          showFollowButton: currentUser?.id != user.id,
+          onFollowChanged: () {
+            _toggleFollow(user.id);
+          },
+
           onTap: () {
-            // We'll navigate to the user's profile later.
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => Profile(
+                  userId: user.id,
+                ),
+              ),
+            );
           },
         );
       },
     );
-
-
-}
+  }
 
   @override
   Widget build(BuildContext context) {
     final searchState = ref.watch(searchProvider);
     final searchController = ref.read(searchProvider.notifier);
     final favoriteState = ref.watch(favoriteProvider);
+    final followState = ref.watch(followProvider);
+
+    ref.listen<FollowState>(followProvider, (previous, next) {
+      if (next.errorMessage != null &&
+          next.errorMessage != previous?.errorMessage) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(next.errorMessage!)));
+      }
+    });
+
+    ref.listen<FavoriteState>(favoriteProvider, (previous, next) {
+      if (next.errorMessage != null &&
+          next.errorMessage != previous?.errorMessage) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(next.errorMessage!)));
+      }
+    });
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -153,7 +193,12 @@ class _SearchState extends ConsumerState<Search> {
           ),
 
           Expanded(
-            child: _buildSearchResultSection(searchState, searchController,favoriteState),
+            child: _buildSearchResultSection(
+              searchState,
+              searchController,
+              favoriteState,
+              followState,
+            ),
           ),
         ],
       ),

@@ -35,4 +35,24 @@ class RecipeService {
     return apiClient.createRecipe(request);
   }
 
+  Future<Page<RecipeCard>> getMyRecipes({
+    int page = 1,
+    int pageSize = 10,
+  }) {
+    return apiClient.getMyRecipes(
+      page: page,
+      pageSize: pageSize,
+    );
+  }
+
+  Future<Page<RecipeCard>> getSavedRecipes({
+    int page = 1,
+    int pageSize = 10,
+  }) async {
+    return apiClient.getSavedRecipes(
+      page: page,
+      pageSize: pageSize,
+    );
+  }
+
 }

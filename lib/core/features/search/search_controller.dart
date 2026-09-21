@@ -28,6 +28,32 @@ class SearchController extends Notifier<SearchState> {
     );
   }
 
+  void updateFollowing(String userId, bool isFollowing) {
+    final users = state.userResults?.items ?? [];
+
+    final index = users.indexWhere(
+          (user) => user.id == userId,
+    );
+
+    if (index == -1) {
+      return;
+    }
+
+    final updatedUsers = [...users];
+
+    updatedUsers[index] = updatedUsers[index].copyWith(
+      isFollowing: isFollowing,
+    );
+
+    state = state.copyWith(
+      userResults: state.userResults!.copyWith(
+        items: updatedUsers,
+      ),
+    );
+  }
+
+
+
   void updateFavorite(String recipeId, bool isFavorite) {
     final recipes = state.recipeResults?.items ?? [];
     final index = recipes.indexWhere((recipe) => recipe.id == recipeId);
