@@ -24,15 +24,19 @@ class SavedAndSearchRecipeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 14.0),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8.0,
+        vertical: 14.0,
+      ),
       child: SizedBox(
         width: double.infinity,
         height: 100,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 25,
           children: [
-            //image part
+            // -------------------------
+            // IMAGE
+            // -------------------------
             Container(
               width: 100,
               height: 100,
@@ -41,57 +45,78 @@ class SavedAndSearchRecipeCard extends StatelessWidget {
               ),
               clipBehavior: Clip.antiAlias,
               child: recipeImageUrl != null
-                  ? Image.network(recipeImageUrl!, fit: BoxFit.cover)
+                  ? Image.network(
+                recipeImageUrl!,
+                fit: BoxFit.cover,
+              )
                   : const Icon(Icons.image),
             ),
-            //detail part
+
+            const SizedBox(width: 16),
+
+            // -------------------------
+            // DETAILS
+            // -------------------------
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Recipe name
                   Text(
                     recipeName,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        recipeCategory,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      Text(" • ", style: Theme.of(context).textTheme.bodyLarge),
-                      Text(
-                        '${recipeTime.toString()} mins',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ],
+
+                  const SizedBox(height: 4),
+
+                  // Category
+                  Text(
+                    recipeCategory,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+
+                  const SizedBox(height: 2),
+
+                  // Time
+                  Text(
+                    '$recipeTime mins',
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
               ),
             ),
-            //icon part
+
+            // -------------------------
+            // FAVORITE
+            // -------------------------
+            const SizedBox(width: 8),
+
             isFavoriteLoading
                 ? const SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: Center(
-                      child: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
-                  )
+              width: 48,
+              height: 48,
+              child: Center(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            )
                 : IconButton(
-                    onPressed: onTapFavorite,
-                    icon: Icon(
-                      isFavorite
-                          ? Icons.favorite_rounded
-                          : Icons.favorite_border_rounded,
-                      color: isFavorite ? Colors.red : Colors.grey,
-                      size: 30,
-                    ),
-                  ),
+              onPressed: onTapFavorite,
+              icon: Icon(
+                isFavorite
+                    ? Icons.favorite_rounded
+                    : Icons.favorite_border_rounded,
+                color: isFavorite ? Colors.red : Colors.grey,
+                size: 30,
+              ),
+            ),
           ],
         ),
       ),
