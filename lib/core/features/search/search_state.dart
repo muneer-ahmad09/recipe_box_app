@@ -11,7 +11,6 @@ class SearchState {
   final Page<UserCardModel>? userResults;
   final SearchStatus status;
   final String? errorMessage;
-  final Set<String> favoriteLoadingIds;
 
   const SearchState({
     this.searchType = SearchType.recipe,
@@ -20,7 +19,6 @@ class SearchState {
     this.userResults,
     this.status = SearchStatus.idle,
     this.errorMessage,
-    this.favoriteLoadingIds = const {},
   });
 
   SearchState copyWith({
@@ -45,7 +43,6 @@ class SearchState {
       errorMessage: identical(errorMessage, _unset)
           ? this.errorMessage
           : errorMessage as String?,
-      favoriteLoadingIds: favoriteLoadingIds ?? this.favoriteLoadingIds,
     );
   }
 }
