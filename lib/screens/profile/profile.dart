@@ -5,19 +5,18 @@ import 'package:recipe_box_app/core/features/follow/follow_controller.dart';
 import 'package:recipe_box_app/core/features/profile/profile_controller.dart';
 import 'package:recipe_box_app/core/features/providers.dart';
 import 'package:recipe_box_app/core/theme/app_colors.dart';
+import 'package:recipe_box_app/screens/profile/widgets/profile_reviews_tab.dart';
+import 'package:recipe_box_app/screens/profile/widgets/recips_tab.dart';
 import 'package:recipe_box_app/screens/profile/widgets/saved_tab.dart';
 
 import '../../core/features/profile/recipes/profile_recipe_controller.dart';
+import '../../core/features/profile_reviews/profile_review_controller.dart';
 import 'widgets/profile_user_detail.dart';
-import 'widgets/recipe_tab.dart';
 
 class Profile extends ConsumerStatefulWidget {
   final String? userId;
 
-  const Profile({
-    super.key,
-    this.userId,
-  });
+  const Profile({super.key, this.userId});
 
   @override
   ConsumerState<Profile> createState() => _ProfileState();
@@ -49,9 +48,7 @@ class _ProfileState extends ConsumerState<Profile> {
   }
 
   Future<void> _toggleFollow(String userId) async {
-    final result = await ref
-        .read(followProvider.notifier)
-        .toggleFollow(userId);
+    final result = await ref.read(followProvider.notifier).toggleFollow(userId);
 
     if (result == null || !mounted) {
       return;
@@ -70,24 +67,17 @@ class _ProfileState extends ConsumerState<Profile> {
 
     final profile = profileState.profile;
 
-    final isOwnProfile = profile != null &&
-        currentUser != null &&
-        profile.id == currentUser.id;
+    final isOwnProfile =
+        profile != null && currentUser != null && profile.id == currentUser.id;
     final tabCount = isOwnProfile ? 3 : 2;
 
     if (profileState.isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (profileState.errorMessage != null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Profile'),
-        ),
+        appBar: !isOwnProfile ? AppBar(title: const Text('Profile')) : null,
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -105,28 +95,21 @@ class _ProfileState extends ConsumerState<Profile> {
     }
 
     if (profile == null) {
-      return const Scaffold(
-        body: Center(
-          child: Text('Profile not found'),
-        ),
-      );
+      return const Scaffold(body: Center(child: Text('Profile not found')));
     }
 
     return DefaultTabController(
       length: tabCount,
       child: Scaffold(
+        appBar: !isOwnProfile ? AppBar(title: const Text('Profile')) : null,
         body: NestedScrollView(
-          headerSliverBuilder: (
-              context,
-              innerBoxIsScrolled,
-              ) {
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
               SliverToBoxAdapter(
                 child: ProfileUserDetail(
                   profile: profile,
                   isOwnProfile: isOwnProfile,
-                  isFollowLoading:
-                  followState.loadingIds.contains(profile.id),
+                  isFollowLoading: followState.loadingIds.contains(profile.id),
                   onFollowChanged: () {
                     _toggleFollow(profile.id);
                   },
@@ -136,16 +119,24 @@ class _ProfileState extends ConsumerState<Profile> {
               SliverPersistentHeader(
                 pinned: true,
                 delegate: _TabBarDelegate(
-                    TabBar(
-                      tabs: [
-                        const Tab(text: 'Recipes'),
+                  TabBar(
+                    onTap: (index) {
+                      if (index == tabCount - 1) {
+                        final profileId = profile.id;
 
-                        if (isOwnProfile)
-                          const Tab(text: 'Saved'),
+                        ref
+                            .read(profileReviewProvider.notifier)
+                            .loadReviews(userId: profileId);
+                      }
+                    },
+                    tabs: [
+                      const Tab(text: 'Recipes'),
 
-                        const Tab(text: 'Reviews'),
-                      ],
-                    )
+                      if (isOwnProfile) const Tab(text: 'Saved'),
+
+                      const Tab(text: 'Reviews'),
+                    ],
+                  ),
                 ),
               ),
             ];
@@ -153,38 +144,31 @@ class _ProfileState extends ConsumerState<Profile> {
 
           body: TabBarView(
             children: [
-               RecipeTab(),
+              RecipeTab(),
 
-              if (isOwnProfile)
-                const SavedTab(),
+              if (isOwnProfile) const SavedTab(),
 
-              const Center(
-                child: Text('Reviews'),
-              ),
+              ProfileReviewsTab(userId: profile.id),
             ],
-          )
+          ),
         ),
       ),
     );
   }
 }
 
-class _TabBarDelegate
-    extends SliverPersistentHeaderDelegate {
+class _TabBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar tabBar;
 
   _TabBarDelegate(this.tabBar);
 
   @override
   Widget build(
-      BuildContext context,
-      double shrinkOffset,
-      bool overlapsContent,
-      ) {
-    return Container(
-      color: AppColors.paper,
-      child: tabBar,
-    );
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Container(color: AppColors.paper, child: tabBar);
   }
 
   @override
@@ -194,9 +178,7 @@ class _TabBarDelegate
   double get minExtent => tabBar.preferredSize.height;
 
   @override
-  bool shouldRebuild(
-      covariant SliverPersistentHeaderDelegate oldDelegate,
-      ) {
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
     return false;
   }
 }

@@ -4,6 +4,7 @@ import 'package:recipe_box_app/models/favorite_api_model.dart';
 import 'package:recipe_box_app/models/token_pair.dart';
 import 'package:recipe_box_app/models/user_card_model.dart';
 
+import '../../models/ProfileReview.dart';
 import '../../models/cloudinary_signature.dart';
 import '../../models/create_review_request.dart';
 import '../../models/follow_api_model.dart';
@@ -340,6 +341,26 @@ class ApiClient {
     return Page<Review>.fromJson(
       response.data,
       Review.fromJson,
+    );
+  }
+
+  Future<Page<ProfileReview>> getUserReviews({
+    required String userId,
+    int page = 1,
+    int pageSize = 10,
+  }) async {
+    final response = await _request(
+      '/users/$userId/reviews',
+      'GET',
+      queryParameters: {
+        'page': page,
+        'page_size': pageSize,
+      },
+    );
+
+    return Page<ProfileReview>.fromJson(
+      response.data,
+      ProfileReview.fromJson,
     );
   }
 }

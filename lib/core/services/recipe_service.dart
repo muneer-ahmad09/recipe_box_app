@@ -1,3 +1,4 @@
+import '../../models/ProfileReview.dart';
 import '../../models/create_review_request.dart';
 import '../../models/favorite_api_model.dart';
 import '../../models/page.dart';
@@ -78,6 +79,18 @@ class RecipeService {
   }) async {
     return apiClient.getReviews(
       recipeId: recipeId,
+      page: page,
+      pageSize: pageSize,
+    );
+  }
+
+  Future<Page<ProfileReview>> getUserReviews({
+    required String userId,
+    int page = 1,
+    int pageSize = 10,
+  }) {
+    return apiClient.getUserReviews(
+      userId: userId,
       page: page,
       pageSize: pageSize,
     );
