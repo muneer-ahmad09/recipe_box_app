@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recipe_box_app/core/auth/auth_manager.dart';
 import 'package:recipe_box_app/screens/auth/login/login_screen.dart';
 
 import '../../../core/features/providers.dart';

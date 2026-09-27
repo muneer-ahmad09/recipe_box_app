@@ -39,6 +39,9 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Navigator(
+        observers: [
+          HeroController(),
+        ],
       onGenerateRoute: (settings) {
         return MaterialPageRoute(
           builder: (context) =>Scaffold(

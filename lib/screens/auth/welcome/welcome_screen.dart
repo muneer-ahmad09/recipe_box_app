@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_box_app/core/theme/app_colors.dart';
 
-import '../../../core/auth/auth_manager.dart';
 import '../login/login_screen.dart';
 import '../register/register_screen.dart';
 

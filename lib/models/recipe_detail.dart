@@ -1,6 +1,6 @@
 import 'package:recipe_box_app/models/recipe_enums.dart';
 
-import 'user.dart';
+import 'author.dart';
 
 class RecipeDetail {
   final String id;
@@ -11,7 +11,7 @@ class RecipeDetail {
   final Category category;
   final double ratingAvg;
   final int ratingCount;
-  final User author;
+  final Author author;
   final bool isFavorite;
   final List<String> ingredients;
   final List<String> steps;
@@ -43,11 +43,31 @@ class RecipeDetail {
       category: convertApiCategoryToEnum(json['category']),
       ratingAvg: (json['rating_avg'] as num).toDouble(),
       ratingCount: json['rating_count'],
-      author: User.fromJson(json['author']),
+      author: Author.fromJson(json['author']),
       isFavorite: json['is_favorite'],
       ingredients: List<String>.from(json['ingredients']),
       steps: List<String>.from(json['steps']),
       createdAt: DateTime.parse(json['created_at']),
     );
   }
+  RecipeDetail copyWith({
+    bool? isFavorite,
+  }) {
+    return RecipeDetail(
+      id: id,
+      title: title,
+      imageUrl: imageUrl,
+      cookMinutes: cookMinutes,
+      difficulty: difficulty,
+      category: category,
+      ratingAvg: ratingAvg,
+      ratingCount: ratingCount,
+      author: author,
+      isFavorite: isFavorite ?? this.isFavorite,
+      ingredients: ingredients,
+      steps: steps,
+      createdAt: createdAt,
+    );
+  }
+
 }

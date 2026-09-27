@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recipe_box_app/core/auth/auth_manager.dart';
 import 'package:recipe_box_app/core/theme/app_colors.dart';
 import 'package:recipe_box_app/screens/auth/register/register_screen.dart';
 

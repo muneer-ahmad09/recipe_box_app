@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recipe_box_app/core/services/recipe_service.dart';
 
 import 'package:recipe_box_app/navigation/auth_navigation.dart';
 import 'package:recipe_box_app/navigation/main_navigation.dart';
 
-import 'core/auth/auth_manager.dart';
 import 'core/auth/auth_state.dart';
-import 'core/dependencies/app_dependencies.dart';
 
 import 'core/features/providers.dart';
 import 'core/theme/app_theme.dart';

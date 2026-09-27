@@ -82,7 +82,6 @@ import 'package:recipe_box_app/screens/setting/widgets/settings_container.dart';
 import 'package:recipe_box_app/screens/setting/widgets/settings_divider.dart';
 import 'package:recipe_box_app/screens/setting/widgets/settings_tile.dart';
 
-import '../../core/auth/auth_manager.dart';
 import '../../core/features/providers.dart';
 
 class SettingScreen extends ConsumerWidget {

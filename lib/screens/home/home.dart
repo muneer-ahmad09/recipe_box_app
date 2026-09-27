@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recipe_box_app/core/auth/auth_manager.dart';
 import 'package:recipe_box_app/core/theme/app_colors.dart';
 import 'package:recipe_box_app/screens/all_recipes/all_recipes_screen.dart';
 import 'package:recipe_box_app/screens/home/widgets/header.dart';
@@ -11,7 +10,6 @@ import 'package:recipe_box_app/widgets/custom_search_bar.dart';
 
 import '../../core/features/providers.dart';
 import '../../core/network/api_exception.dart';
-import '../../core/services/recipe_service.dart';
 import '../../models/recipe_card.dart';
 
 class Home extends ConsumerStatefulWidget {
@@ -77,7 +75,8 @@ class _HomeState extends ConsumerState<Home> {
   Widget _buildRecipeSection() {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
-    } else if (errorMessage != null && errorMessage!.isNotEmpty) {
+    }
+    else if (errorMessage != null && errorMessage!.isNotEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -113,7 +112,7 @@ class _HomeState extends ConsumerState<Home> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (BuildContext context) => RecipePage(id: item.id),
+                  builder: (_) => RecipePage(id: item.id,initialImageUrl: item.imageUrl,),
                 ),
               );
             },

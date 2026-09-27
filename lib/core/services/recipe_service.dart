@@ -1,8 +1,10 @@
+import '../../models/create_review_request.dart';
 import '../../models/favorite_api_model.dart';
 import '../../models/page.dart';
 import '../../models/recipe_card.dart';
 import '../../models/recipe_create_request.dart';
 import '../../models/recipe_detail.dart';
+import '../../models/review.dart';
 import '../network/api_client.dart';
 
 class RecipeService {
@@ -50,6 +52,32 @@ class RecipeService {
     int pageSize = 10,
   }) async {
     return apiClient.getSavedRecipes(
+      page: page,
+      pageSize: pageSize,
+    );
+  }
+
+  Future<RecipeDetail> getRecipe(String recipeId) {
+    return apiClient.getRecipe(recipeId);
+  }
+
+  Future<Review> createReview({
+    required String recipeId,
+    required CreateReviewRequest request,
+  }) async {
+    return apiClient.createReview(
+      recipeId,
+      request,
+    );
+  }
+
+  Future<Page<Review>> getReviews({
+    required String recipeId,
+    int page = 1,
+    int pageSize = 10,
+  }) async {
+    return apiClient.getReviews(
+      recipeId: recipeId,
       page: page,
       pageSize: pageSize,
     );

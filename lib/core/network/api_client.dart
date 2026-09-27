@@ -5,11 +5,13 @@ import 'package:recipe_box_app/models/token_pair.dart';
 import 'package:recipe_box_app/models/user_card_model.dart';
 
 import '../../models/cloudinary_signature.dart';
+import '../../models/create_review_request.dart';
 import '../../models/follow_api_model.dart';
 import '../../models/page.dart';
 import '../../models/recipe_card.dart';
 import '../../models/recipe_create_request.dart';
 import '../../models/recipe_detail.dart';
+import '../../models/review.dart';
 import '../../models/user.dart';
 import '../../models/user_profile_model.dart';
 import 'api_config.dart';
@@ -298,4 +300,46 @@ class ApiClient {
     );
   }
 
+  Future<RecipeDetail> getRecipe(String recipeId) async {
+    final response = await _request(
+      '/recipes/$recipeId',
+      'GET',
+    );
+    return RecipeDetail.fromJson(response.data);
+  }
+
+
+  Future<Review> createReview(
+      String recipeId,
+      CreateReviewRequest request,
+      ) async {
+    final response = await _request(
+      '/recipes/$recipeId/reviews',
+      'POST',
+      data: request.toJson(),
+      contentType: Headers.jsonContentType,
+    );
+
+    return Review.fromJson(response.data);
+  }
+
+  Future<Page<Review>> getReviews({
+    required String recipeId,
+    int page = 1,
+    int pageSize = 10,
+  }) async {
+    final response = await _request(
+      '/recipes/$recipeId/reviews',
+      'GET',
+      queryParameters: {
+        'page': page,
+        'page_size': pageSize,
+      },
+    );
+
+    return Page<Review>.fromJson(
+      response.data,
+      Review.fromJson,
+    );
+  }
 }
