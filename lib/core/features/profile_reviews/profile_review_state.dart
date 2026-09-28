@@ -1,4 +1,4 @@
-import '../../../models/ProfileReview.dart';
+import '../../../models/profile_review.dart';
 
 class ProfileReviewState {
   final List<ProfileReview> reviews;

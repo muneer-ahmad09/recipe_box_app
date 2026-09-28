@@ -1,4 +1,4 @@
-import '../../models/ProfileReview.dart';
+import '../../models/profile_review.dart';
 import '../../models/create_review_request.dart';
 import '../../models/favorite_api_model.dart';
 import '../../models/page.dart';

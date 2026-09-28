@@ -4,7 +4,7 @@ import 'package:recipe_box_app/models/favorite_api_model.dart';
 import 'package:recipe_box_app/models/token_pair.dart';
 import 'package:recipe_box_app/models/user_card_model.dart';
 
-import '../../models/ProfileReview.dart';
+import '../../models/profile_review.dart';
 import '../../models/cloudinary_signature.dart';
 import '../../models/create_review_request.dart';
 import '../../models/follow_api_model.dart';

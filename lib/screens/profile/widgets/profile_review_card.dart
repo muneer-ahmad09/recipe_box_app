@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../models/ProfileReview.dart';
+import '../../../models/profile_review.dart';
 
 class ProfileReviewCard extends StatelessWidget {
   final ProfileReview review;
