@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recipe_box_app/core/notifications/route_arguments.dart';
+import 'package:recipe_box_app/navigation/main_navigation_controller.dart';
 
 import '../core/features/add_recipe/add_recipe_controller.dart';
 import '../core/features/add_recipe/add_recipe_state.dart';
+import '../core/notifications/navigation_keys.dart';
 import '../screens/add_item/add_item.dart';
 import '../screens/bookmark/bookmark.dart';
 import '../screens/home/home.dart';
 import '../screens/profile/profile.dart';
+import '../screens/recipe_page/recipe_page.dart';
 import '../screens/search/search.dart';
 import '../screens/setting/setting_screen.dart';
 
@@ -19,14 +23,7 @@ class MainNavigation extends ConsumerStatefulWidget {
 }
 
 class _MainNavigationState extends ConsumerState<MainNavigation> {
-  int _selectedIndex = 0;
 
-
-  void _onDestinationSelected(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   late final List<Widget> _screens = [
     Home(),
@@ -38,54 +35,87 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedIndex = ref.watch(mainNavigationProvider);
+
     return Navigator(
-        observers: [
-          HeroController(),
-        ],
+        key: mainNavigatorKey,
+      observers: [
+        HeroController(),
+      ],
+      initialRoute: '/',
       onGenerateRoute: (settings) {
-        return MaterialPageRoute(
-          builder: (context) =>Scaffold(
-            appBar: _getAppBar(context),
-            body: SafeArea(child: _screens[_selectedIndex]),
-            bottomNavigationBar: NavigationBar(
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: _onDestinationSelected,
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home_filled),
-                  label: "Home",
+        switch (settings.name) {
+          case '/':
+            return MaterialPageRoute(
+              builder: (context) => Scaffold(
+                appBar: _getAppBar(context, selectedIndex),
+                body: SafeArea(
+                  child: _screens[selectedIndex],
                 ),
-                NavigationDestination(
-                  icon: Icon(Icons.search_outlined),
-                  selectedIcon: Icon(Icons.search),
-                  label: "Search",
+                bottomNavigationBar: NavigationBar(
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (index) {
+                    ref
+                        .read(mainNavigationProvider.notifier)
+                        .selectTab(index);
+                  },
+                  destinations: const [
+                    NavigationDestination(
+                      icon: Icon(Icons.home_outlined),
+                      selectedIcon: Icon(Icons.home_filled),
+                      label: 'Home',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.search_outlined),
+                      selectedIcon: Icon(Icons.search),
+                      label: 'Search',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.add_box_outlined),
+                      selectedIcon: Icon(Icons.add_box),
+                      label: 'Add',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.bookmark_outline_rounded),
+                      selectedIcon: Icon(Icons.bookmark_rounded),
+                      label: 'Saved',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.person_3_outlined),
+                      selectedIcon: Icon(Icons.person_3_rounded),
+                      label: 'Profile',
+                    ),
+                  ],
                 ),
-                NavigationDestination(
-                  icon: Icon(Icons.add_box_outlined),
-                  selectedIcon: Icon(Icons.add_box),
-                  label: "Add",
+              ),
+            );
+
+          case '/recipe':
+            final args = settings.arguments as RecipeRouteArguments;
+
+            return MaterialPageRoute(
+              builder: (context) => RecipePage(
+                id: args.id,
+                initialImageUrl: args.initialImageUrl,
+              ),
+            );
+
+          default:
+            return MaterialPageRoute(
+              builder: (context) => Scaffold(
+                appBar: _getAppBar(context, selectedIndex),
+                body: SafeArea(
+                  child: _screens[selectedIndex],
                 ),
-                NavigationDestination(
-                  icon: Icon(Icons.bookmark_outline_rounded),
-                  selectedIcon: Icon(Icons.bookmark_rounded),
-                  label: "Saved",
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.person_3_outlined),
-                  selectedIcon: Icon(Icons.person_3_rounded),
-                  label: "Profile",
-                ),
-              ],
-            ),
-          )
-        );
-      }
+              ),
+            );
+        }
+      },
     );
   }
 
-  PreferredSizeWidget _getAppBar(BuildContext context){
-    switch(_selectedIndex){
+  PreferredSizeWidget _getAppBar(BuildContext context, int selectedIndex){
+    switch(selectedIndex){
       case 0 :
         return AppBar(
           title: Text("Recipe Box",style: Theme.of(context).textTheme.headlineMedium?.copyWith(
