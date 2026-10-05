@@ -5,6 +5,7 @@ import '../auth/auth_service.dart';
 import '../network/api_client.dart';
 import '../network/auth_interceptor.dart';
 import '../network/refresh_client.dart';
+import '../notifications/notification_service.dart';
 import '../services/cloudinary_service.dart';
 import '../services/recipe_service.dart';
 import '../services/search_service.dart';
@@ -89,4 +90,9 @@ final userServicesProvider = Provider<UserServices>((ref) {
   return UserServices(
     ref.read(apiClientProvider),
   );
+});
+
+final notificationServiceProvider =
+Provider<NotificationService>((ref) {
+  return NotificationService();
 });

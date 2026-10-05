@@ -11,13 +11,17 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
 
-  final NotificationRouter _notificationRouter =
-  const NotificationRouter();
+  final NotificationRouter _notificationRouter = NotificationRouter();
 
   Future<void> initialize() async {
     await _initializeLocalNotifications();
     await _initializeFirebaseMessaging();
   }
+
+  void handlePendingNotification() {
+    _notificationRouter.handlePending();
+  }
+
 
   // Future<void> _initializeLocalNotifications() async {
   //   const androidSettings = AndroidInitializationSettings(
@@ -58,9 +62,7 @@ class NotificationService {
   //   print('Recipe ID: ${data['recipeId']}');
   // }
 
-  void _onNotificationTapped(
-      NotificationResponse response,
-      ) {
+  void _onNotificationTapped(NotificationResponse response) {
     final payload = response.payload;
 
     if (payload == null) {
@@ -95,17 +97,14 @@ class NotificationService {
   //   print('Data: ${message.data}');
   // }
 
-  void _handleNotificationOpenedFromTerminated(
-      RemoteMessage message,
-      ) {
+  void _handleNotificationOpenedFromTerminated(RemoteMessage message) {
     _notificationRouter.handle(message.data);
   }
 
-  void _handleNotificationOpenedFromBackground(
-      RemoteMessage message,
-      ) {
+  void _handleNotificationOpenedFromBackground(RemoteMessage message) {
     _notificationRouter.handle(message.data);
   }
+
   // void _handleNotificationOpenedFromBackground(RemoteMessage message) {
   //   print('NOTIFICATION OPENED FROM BACKGROUND');
   //   print('Data: ${message.data}');

@@ -7,3 +7,11 @@ class RecipeRouteArguments {
     this.initialImageUrl,
   });
 }
+
+class ProfileRouteArguments {
+  final String userId;
+
+  const ProfileRouteArguments({
+    required this.userId,
+  });
+}

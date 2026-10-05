@@ -10,6 +10,7 @@ class ProfileUserDetail extends StatelessWidget {
   final bool isOwnProfile;
   final bool isFollowLoading;
   final VoidCallback? onFollowChanged;
+  final bool showFollowButton;
 
   const ProfileUserDetail({
     super.key,
@@ -17,6 +18,7 @@ class ProfileUserDetail extends StatelessWidget {
     required this.isOwnProfile,
     this.isFollowLoading = false,
     this.onFollowChanged,
+    required this.showFollowButton,
   });
 
   @override
@@ -148,7 +150,7 @@ class ProfileUserDetail extends StatelessWidget {
           ),
 
           // Follow button only for other users.
-          if (!isOwnProfile) ...[
+          if (showFollowButton) ...[
             const SizedBox(height: 20),
 
             SizedBox(

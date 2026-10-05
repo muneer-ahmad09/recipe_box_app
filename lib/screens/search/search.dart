@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_box_app/core/features/favorites/favorite_controller.dart';
 import 'package:recipe_box_app/core/features/favorites/favorite_state.dart';
 import 'package:recipe_box_app/core/features/providers.dart';
+import 'package:recipe_box_app/screens/profile/profile.dart';
 
 import '../../core/features/follow/follow_controller.dart';
 import '../../core/features/follow/follow_state.dart';
@@ -13,7 +14,6 @@ import '../../widgets/custom_search_bar.dart';
 import '../../widgets/options_tab.dart';
 import '../../widgets/saved_recipe_card.dart';
 import '../../widgets/user_card.dart';
-import '../profile/profile.dart';
 
 class Search extends ConsumerStatefulWidget {
   const Search({super.key});
@@ -135,9 +135,7 @@ class _SearchState extends ConsumerState<Search> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => Profile(
-                  userId: user.id,
-                ),
+                builder: (_) => ProfilePage(userId: user.id)
               ),
             );
           },

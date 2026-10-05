@@ -22,6 +22,10 @@ class RecipeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = initialImageUrl?.isNotEmpty == true
+        ? initialImageUrl
+        : recipe?.imageUrl;
+
     return SizedBox(
       height: 460,
       child: Stack(
@@ -32,9 +36,9 @@ class RecipeHeader extends StatelessWidget {
           // --------------------------------------------------------------
           Hero(
             tag: 'recipe-image-$recipeId',
-            child: initialImageUrl != null && initialImageUrl!.isNotEmpty
+            child: imageUrl != null && imageUrl.isNotEmpty
                 ? Image.network(
-                    initialImageUrl!,
+                    imageUrl,
                     height: 300,
                     width: double.infinity,
                     fit: BoxFit.cover,

@@ -209,7 +209,9 @@ class _HomeState extends ConsumerState<Home> {
               ),
             ],
           ),
+
           SizedBox(height: 320, child: _buildRecipeSection()),
+
         ],
       ),
     );

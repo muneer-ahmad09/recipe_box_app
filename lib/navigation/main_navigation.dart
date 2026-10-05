@@ -10,12 +10,14 @@ import '../screens/add_item/add_item.dart';
 import '../screens/bookmark/bookmark.dart';
 import '../screens/home/home.dart';
 import '../screens/profile/profile.dart';
+import '../screens/profile/profile_view.dart';
 import '../screens/recipe_page/recipe_page.dart';
 import '../screens/search/search.dart';
 import '../screens/setting/setting_screen.dart';
 
-class MainNavigation extends ConsumerStatefulWidget {
 
+
+class MainNavigation extends ConsumerStatefulWidget {
   const MainNavigation({super.key});
 
   @override
@@ -23,22 +25,10 @@ class MainNavigation extends ConsumerStatefulWidget {
 }
 
 class _MainNavigationState extends ConsumerState<MainNavigation> {
-
-
-  late final List<Widget> _screens = [
-    Home(),
-    Search(),
-    AddItem(),
-    Bookmark(),
-    Profile(),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final selectedIndex = ref.watch(mainNavigationProvider);
-
     return Navigator(
-        key: mainNavigatorKey,
+      key: mainNavigatorKey,
       observers: [
         HeroController(),
       ],
@@ -47,47 +37,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
         switch (settings.name) {
           case '/':
             return MaterialPageRoute(
-              builder: (context) => Scaffold(
-                appBar: _getAppBar(context, selectedIndex),
-                body: SafeArea(
-                  child: _screens[selectedIndex],
-                ),
-                bottomNavigationBar: NavigationBar(
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: (index) {
-                    ref
-                        .read(mainNavigationProvider.notifier)
-                        .selectTab(index);
-                  },
-                  destinations: const [
-                    NavigationDestination(
-                      icon: Icon(Icons.home_outlined),
-                      selectedIcon: Icon(Icons.home_filled),
-                      label: 'Home',
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.search_outlined),
-                      selectedIcon: Icon(Icons.search),
-                      label: 'Search',
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.add_box_outlined),
-                      selectedIcon: Icon(Icons.add_box),
-                      label: 'Add',
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.bookmark_outline_rounded),
-                      selectedIcon: Icon(Icons.bookmark_rounded),
-                      label: 'Saved',
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.person_3_outlined),
-                      selectedIcon: Icon(Icons.person_3_rounded),
-                      label: 'Profile',
-                    ),
-                  ],
-                ),
-              ),
+              builder: (context) => const MainNavigationShell(),
             );
 
           case '/recipe':
@@ -100,44 +50,119 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
               ),
             );
 
+          case '/profile':
+            final args = settings.arguments as ProfileRouteArguments;
+
+            return MaterialPageRoute(
+              builder: (context) => ProfilePage(
+                userId: args.userId,
+              ),
+            );
+
           default:
             return MaterialPageRoute(
-              builder: (context) => Scaffold(
-                appBar: _getAppBar(context, selectedIndex),
-                body: SafeArea(
-                  child: _screens[selectedIndex],
-                ),
-              ),
+              builder: (context) => const MainNavigationShell(),
             );
         }
       },
     );
   }
+}
 
-  PreferredSizeWidget _getAppBar(BuildContext context, int selectedIndex){
-    switch(selectedIndex){
-      case 0 :
+class MainNavigationShell extends ConsumerWidget {
+  const MainNavigationShell({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedIndex = ref.watch(mainNavigationProvider);
+
+    final screens = [
+      Home(),
+      Search(),
+      AddItem(),
+      Bookmark(),
+      ProfileView(),
+    ];
+
+    return Scaffold(
+      appBar: _getAppBar(context, selectedIndex, ref),
+      body: SafeArea(
+        child: screens[selectedIndex],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: selectedIndex,
+        onDestinationSelected: (index) {
+          ref
+              .read(mainNavigationProvider.notifier)
+              .selectTab(index);
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home_filled),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.search_outlined),
+            selectedIcon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.add_box_outlined),
+            selectedIcon: Icon(Icons.add_box),
+            label: 'Add',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.bookmark_outline_rounded),
+            selectedIcon: Icon(Icons.bookmark_rounded),
+            label: 'Saved',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_3_outlined),
+            selectedIcon: Icon(Icons.person_3_rounded),
+            label: 'Profile',
+          ),
+        ],
+      ),
+    );
+  }
+
+  PreferredSizeWidget _getAppBar(
+      BuildContext context,
+      int selectedIndex,
+      WidgetRef ref,
+      ) {
+    switch (selectedIndex) {
+      case 0:
         return AppBar(
-          title: Text("Recipe Box",style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-          ),),
+          title: Text(
+            'Recipe Box',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         );
+
       case 1:
         return AppBar(
-          title: Text("Search",style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-          ),),
+          title: Text(
+            'Search',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         );
 
       case 2:
         return AppBar(
-          title: Text("New Recipe",
+          title: Text(
+            'New Recipe',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-          ),
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           actions: [
             Consumer(
@@ -150,14 +175,17 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                   onPressed: status == AddRecipeStatus.saving
                       ? null
                       : () async {
-                    final recipe =
-                    await ref.read(addRecipeProvider.notifier).saveRecipe();
+                    final recipe = await ref
+                        .read(addRecipeProvider.notifier)
+                        .saveRecipe();
 
                     if (recipe == null) {
                       return;
                     }
-                    ref.read(addRecipeProvider.notifier).reset();
 
+                    ref
+                        .read(addRecipeProvider.notifier)
+                        .reset();
 
                     // Success handling will come next.
                   },
@@ -167,7 +195,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                     height: 18,
                     child: CircularProgressIndicator(),
                   )
-                      : const Text("Save"),
+                      : const Text('Save'),
                 );
               },
             ),
@@ -176,33 +204,41 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
 
       case 3:
         return AppBar(
-          title: Text("Saved",style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-          ),),
+          title: Text(
+            'Saved',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         );
 
       case 4:
         return AppBar(
-          title: Text("Profile",style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-          ),
+          title: Text(
+            'Profile',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           actions: [
-            IconButton(onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SettingScreen()),
-              );
-            }, icon: Icon(Icons.settings))
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SettingScreen(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.settings),
+            ),
           ],
         );
 
       default:
         return AppBar();
-
     }
-
   }
 }

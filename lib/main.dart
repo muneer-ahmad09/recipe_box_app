@@ -10,31 +10,20 @@ import 'core/auth/auth_state.dart';
 import 'core/features/providers.dart';
 import 'core/notifications/notification_service.dart';
 import 'core/theme/app_theme.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 
 Future<void> main() async {
-  final widgetsBinding =
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
-  FlutterNativeSplash.preserve(
-    widgetsBinding: widgetsBinding,
-  );
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await Firebase.initializeApp();
 
-  final notificationService = NotificationService();
-
-  await notificationService.initialize();
-
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerStatefulWidget {
-
   const MyApp({super.key});
 
   @override
@@ -44,16 +33,22 @@ class MyApp extends ConsumerStatefulWidget {
 class _MyAppState extends ConsumerState<MyApp> {
   late final authManager = ref.read(authManagerProvider);
 
+  late final notificationService = ref.read(notificationServiceProvider);
 
   @override
   void initState() {
     super.initState();
-    authManager.initialize().then((_){
-      FlutterNativeSplash.remove();
-    });
+    _initializeApp();
   }
 
-  Future<void> _reInitialize() async{
+  Future<void> _initializeApp() async {
+    await notificationService.initialize();
+    await authManager.initialize();
+
+    FlutterNativeSplash.remove();
+  }
+
+  Future<void> _reInitialize() async {
     await authManager.initialize();
   }
 
@@ -66,7 +61,7 @@ class _MyAppState extends ConsumerState<MyApp> {
         listenable: authManager,
 
         builder: (context, child) {
-          if(authManager.initializationError!=null){
+          if (authManager.initializationError != null) {
             return Scaffold(
               body: Center(
                 child: Column(
@@ -74,18 +69,23 @@ class _MyAppState extends ConsumerState<MyApp> {
                   children: [
                     Text(authManager.initializationError!),
                     ElevatedButton(
-                      onPressed: (){_reInitialize();},
+                      onPressed: () {
+                        _reInitialize();
+                      },
                       child: Text('Retry'),
                     ),
                   ],
                 ),
               ),
             );
-          }
-          else{
+          } else {
             if (authManager.authState == AuthState.initializing) {
               return const SizedBox.shrink(); // means render noting
             } else if (authManager.authState == AuthState.authenticated) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                notificationService.handlePendingNotification();
+              });
+
               return MainNavigation();
             } else {
               return AuthNavigation();
