@@ -1,12 +1,19 @@
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'notification_router.dart';
 
 class NotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
+  String? _fcmToken;
+
+  Stream<String> get onTokenRefresh => _firebaseMessaging.onTokenRefresh;
+
+  String? get fcmToken => _fcmToken;
 
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
@@ -16,6 +23,16 @@ class NotificationService {
   Future<void> initialize() async {
     await _initializeLocalNotifications();
     await _initializeFirebaseMessaging();
+  }
+
+  Future<String?> getToken() async {
+    if (_fcmToken != null) {
+      return _fcmToken;
+    }
+
+    _fcmToken = await _firebaseMessaging.getToken();
+
+    return _fcmToken;
   }
 
   void handlePendingNotification() {
@@ -77,9 +94,15 @@ class NotificationService {
   Future<void> _initializeFirebaseMessaging() async {
     await _firebaseMessaging.requestPermission();
 
-    final token = await _firebaseMessaging.getToken();
+    _fcmToken = await _firebaseMessaging.getToken();
 
-    // print('FCM TOKEN: $token');
+    debugPrint('FCM token obtained: $_fcmToken');
+
+    FirebaseMessaging.instance.onTokenRefresh.listen((token) {
+      _fcmToken = token;
+
+      debugPrint('FCM token refreshed: $token');
+    });
 
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
     FirebaseMessaging.onMessageOpenedApp.listen(
@@ -111,9 +134,6 @@ class NotificationService {
   // }
 
   Future<void> _handleForegroundMessage(RemoteMessage message) async {
-    print('Foreground notification received');
-    print('Title: ${message.notification?.title}');
-    print('Body: ${message.notification?.body}');
 
     await _showLocalNotification(message);
   }

@@ -130,6 +130,30 @@ class ApiClient {
     return User.fromJson(response.data);
   }
 
+  Future<void> registerDevice({
+    required String token,
+    required String platform,
+  }) async {
+    await _request(
+      '/notifications/register-device',
+      'POST',
+      data: {'token': token, 'platform': platform},
+      contentType: Headers.jsonContentType,
+    );
+  }
+
+  Future<void> unregisterDevice({
+    required String token,
+    required String platform,
+  }) async {
+    await _request(
+      '/notifications/register-device',
+      'DELETE',
+      data: {'token': token, 'platform': platform},
+      contentType: Headers.jsonContentType,
+    );
+  }
+
   // Future<TokenPair> register(
   //   String email,
   //   String password,
@@ -185,9 +209,12 @@ class ApiClient {
     String? sort,
     int? maxCookMinutes,
   }) async {
-    final Map<String, dynamic> queryParameters = {'page': page, 'page_size': pageSize};
+    final Map<String, dynamic> queryParameters = {
+      'page': page,
+      'page_size': pageSize,
+    };
 
-    if(sort != null){
+    if (sort != null) {
       queryParameters['sort'] = sort;
     }
 
@@ -236,7 +263,7 @@ class ApiClient {
     required String query,
     int page = 1,
     int pageSize = 10,
-  }) async{
+  }) async {
     final response = await _request(
       '/users/search',
       'GET',
@@ -246,23 +273,16 @@ class ApiClient {
   }
 
   Future<FollowApiModel> toggleFollow(String userId) async {
-    final response = await _request(
-      '/users/$userId/follow',
-      'POST',
-    );
+    final response = await _request('/users/$userId/follow', 'POST');
 
     return FollowApiModel.fromJson(response.data);
   }
 
   Future<UserProfileModel> getUserProfile(String userId) async {
-    final response = await _request(
-      '/users/$userId',
-      'GET',
-    );
+    final response = await _request('/users/$userId', 'GET');
 
     return UserProfileModel.fromJson(response.data);
   }
-
 
   Future<Page<RecipeCard>> getMyRecipes({
     int page = 1,
@@ -271,15 +291,9 @@ class ApiClient {
     final response = await _request(
       '/recipes/mine',
       'GET',
-      queryParameters: {
-        'page': page,
-        'page_size': pageSize,
-      },
+      queryParameters: {'page': page, 'page_size': pageSize},
     );
-    return Page<RecipeCard>.fromJson(
-      response.data,
-      RecipeCard.fromJson,
-    );
+    return Page<RecipeCard>.fromJson(response.data, RecipeCard.fromJson);
   }
 
   Future<Page<RecipeCard>> getSavedRecipes({
@@ -289,31 +303,21 @@ class ApiClient {
     final response = await _request(
       '/recipes/saved',
       'GET',
-      queryParameters: {
-        'page': page,
-        'page_size': pageSize,
-      },
+      queryParameters: {'page': page, 'page_size': pageSize},
     );
 
-    return Page<RecipeCard>.fromJson(
-      response.data,
-      RecipeCard.fromJson,
-    );
+    return Page<RecipeCard>.fromJson(response.data, RecipeCard.fromJson);
   }
 
   Future<RecipeDetail> getRecipe(String recipeId) async {
-    final response = await _request(
-      '/recipes/$recipeId',
-      'GET',
-    );
+    final response = await _request('/recipes/$recipeId', 'GET');
     return RecipeDetail.fromJson(response.data);
   }
 
-
   Future<Review> createReview(
-      String recipeId,
-      CreateReviewRequest request,
-      ) async {
+    String recipeId,
+    CreateReviewRequest request,
+  ) async {
     final response = await _request(
       '/recipes/$recipeId/reviews',
       'POST',
@@ -332,16 +336,10 @@ class ApiClient {
     final response = await _request(
       '/recipes/$recipeId/reviews',
       'GET',
-      queryParameters: {
-        'page': page,
-        'page_size': pageSize,
-      },
+      queryParameters: {'page': page, 'page_size': pageSize},
     );
 
-    return Page<Review>.fromJson(
-      response.data,
-      Review.fromJson,
-    );
+    return Page<Review>.fromJson(response.data, Review.fromJson);
   }
 
   Future<Page<ProfileReview>> getUserReviews({
@@ -352,15 +350,9 @@ class ApiClient {
     final response = await _request(
       '/users/$userId/reviews',
       'GET',
-      queryParameters: {
-        'page': page,
-        'page_size': pageSize,
-      },
+      queryParameters: {'page': page, 'page_size': pageSize},
     );
 
-    return Page<ProfileReview>.fromJson(
-      response.data,
-      ProfileReview.fromJson,
-    );
+    return Page<ProfileReview>.fromJson(response.data, ProfileReview.fromJson);
   }
 }

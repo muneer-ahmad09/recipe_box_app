@@ -7,9 +7,12 @@ import '../network/auth_interceptor.dart';
 import '../network/refresh_client.dart';
 import '../notifications/notification_service.dart';
 import '../services/cloudinary_service.dart';
+import '../services/device_token_manager.dart';
+import '../services/device_token_service.dart';
 import '../services/recipe_service.dart';
 import '../services/search_service.dart';
 import '../services/user_services.dart';
+import '../storage/device_token_storage.dart';
 import '../storage/token_storage.dart';
 import 'add_recipe/add_recipe_validation.dart';
 
@@ -54,7 +57,8 @@ final authServiceProvider = Provider<AuthService>((ref) {
 final authManagerProvider = Provider<AuthManager>((ref) {
   final authService = ref.read(authServiceProvider);
   final tokenStorage = ref.read(tokenStorageProvider);
-  return AuthManager(authService, tokenStorage);
+  final deviceTokenManager = ref.read(deviceTokenManagerProvider);
+  return AuthManager(authService, tokenStorage, deviceTokenManager);
 });
 
 final addRecipeValidatorProvider = Provider<AddRecipeValidator>((ref) {
@@ -95,4 +99,33 @@ final userServicesProvider = Provider<UserServices>((ref) {
 final notificationServiceProvider =
 Provider<NotificationService>((ref) {
   return NotificationService();
+});
+
+final deviceTokenServiceProvider =
+Provider<DeviceTokenService>((ref) {
+  final apiClient = ref.read(apiClientProvider);
+
+  return DeviceTokenService(apiClient);
+});
+
+final deviceTokenManagerProvider =
+Provider<DeviceTokenManager>((ref) {
+  final notificationService =
+  ref.read(notificationServiceProvider);
+
+  final deviceTokenService =
+  ref.read(deviceTokenServiceProvider);
+  final deviceTokenStorage =
+  ref.read(deviceTokenStorageProvider);
+
+  return DeviceTokenManager(
+    notificationService,
+    deviceTokenService,
+    deviceTokenStorage,
+  );
+});
+
+final deviceTokenStorageProvider =
+Provider<DeviceTokenStorage>((ref) {
+  return DeviceTokenStorage();
 });
