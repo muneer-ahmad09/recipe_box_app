@@ -8,7 +8,6 @@ import 'package:recipe_box_app/navigation/main_navigation.dart';
 import 'core/auth/auth_state.dart';
 
 import 'core/features/providers.dart';
-import 'core/notifications/notification_service.dart';
 import 'core/theme/app_theme.dart';
 
 import 'package:firebase_core/firebase_core.dart';
