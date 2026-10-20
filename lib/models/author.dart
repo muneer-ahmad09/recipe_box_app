@@ -13,4 +13,12 @@ class Author {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'full_name': fullName,
+      'avatar_url': avatarUrl,
+    };
+  }
+
 }

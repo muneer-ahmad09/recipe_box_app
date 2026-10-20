@@ -56,4 +56,19 @@ class RecipeCard {
       isFavorite: isFavorite ?? this.isFavorite,
     );
   }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'image_url': imageUrl,
+      'cook_minutes': cookMinutes,
+      'difficulty': difficultyEnumToString(difficulty),
+      'category': categoryEnumToString(category),
+      'author': author.toJson(),
+      'rating_avg': ratingAvg,
+      'rating_count': ratingCount,
+      'is_favorite': isFavorite,
+    };
+  }
+
 }
