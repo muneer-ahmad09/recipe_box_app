@@ -1,6 +1,7 @@
 
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:recipe_box_app/core/database/tables/cached_recipe_feed_entries.dart';
 import 'dart:convert';
 import 'package:recipe_box_app/models/recipe_enums.dart';
 
@@ -14,6 +15,7 @@ part 'app_database.g.dart';
 @DriftDatabase(
   tables: [
     CachedRecipes,
+    CachedRecipeFeedEntries,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -92,9 +94,24 @@ class AppDatabase extends _$AppDatabase {
   Future<int> countCachedRecipes() {
     return select(cachedRecipes).get().then((rows) => rows.length);
   }
+  //
+  // @override
+  // int get schemaVersion => 1;
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) async {
+      await m.createAll();
+    },
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        await m.createTable(cachedRecipeFeedEntries);
+      }
+    },
+  );
 }
 
 QueryExecutor _openConnection() {

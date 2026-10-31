@@ -677,15 +677,392 @@ class CachedRecipesCompanion extends UpdateCompanion<CachedRecipe> {
   }
 }
 
+class $CachedRecipeFeedEntriesTable extends CachedRecipeFeedEntries
+    with TableInfo<$CachedRecipeFeedEntriesTable, CachedRecipeFeedEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CachedRecipeFeedEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _feedKeyMeta = const VerificationMeta(
+    'feedKey',
+  );
+  @override
+  late final GeneratedColumn<String> feedKey = GeneratedColumn<String>(
+    'feed_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recipeIdMeta = const VerificationMeta(
+    'recipeId',
+  );
+  @override
+  late final GeneratedColumn<String> recipeId = GeneratedColumn<String>(
+    'recipe_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES cached_recipes (id)',
+    ),
+  );
+  static const VerificationMeta _pageMeta = const VerificationMeta('page');
+  @override
+  late final GeneratedColumn<int> page = GeneratedColumn<int>(
+    'page',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cachedAtMeta = const VerificationMeta(
+    'cachedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> cachedAt = GeneratedColumn<DateTime>(
+    'cached_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    feedKey,
+    recipeId,
+    page,
+    position,
+    cachedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cached_recipe_feed_entries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CachedRecipeFeedEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('feed_key')) {
+      context.handle(
+        _feedKeyMeta,
+        feedKey.isAcceptableOrUnknown(data['feed_key']!, _feedKeyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_feedKeyMeta);
+    }
+    if (data.containsKey('recipe_id')) {
+      context.handle(
+        _recipeIdMeta,
+        recipeId.isAcceptableOrUnknown(data['recipe_id']!, _recipeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recipeIdMeta);
+    }
+    if (data.containsKey('page')) {
+      context.handle(
+        _pageMeta,
+        page.isAcceptableOrUnknown(data['page']!, _pageMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pageMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    if (data.containsKey('cached_at')) {
+      context.handle(
+        _cachedAtMeta,
+        cachedAt.isAcceptableOrUnknown(data['cached_at']!, _cachedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_cachedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {feedKey, page, position};
+  @override
+  CachedRecipeFeedEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CachedRecipeFeedEntry(
+      feedKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}feed_key'],
+      )!,
+      recipeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recipe_id'],
+      )!,
+      page: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}page'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      cachedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}cached_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CachedRecipeFeedEntriesTable createAlias(String alias) {
+    return $CachedRecipeFeedEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class CachedRecipeFeedEntry extends DataClass
+    implements Insertable<CachedRecipeFeedEntry> {
+  final String feedKey;
+  final String recipeId;
+  final int page;
+  final int position;
+  final DateTime cachedAt;
+  const CachedRecipeFeedEntry({
+    required this.feedKey,
+    required this.recipeId,
+    required this.page,
+    required this.position,
+    required this.cachedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['feed_key'] = Variable<String>(feedKey);
+    map['recipe_id'] = Variable<String>(recipeId);
+    map['page'] = Variable<int>(page);
+    map['position'] = Variable<int>(position);
+    map['cached_at'] = Variable<DateTime>(cachedAt);
+    return map;
+  }
+
+  CachedRecipeFeedEntriesCompanion toCompanion(bool nullToAbsent) {
+    return CachedRecipeFeedEntriesCompanion(
+      feedKey: Value(feedKey),
+      recipeId: Value(recipeId),
+      page: Value(page),
+      position: Value(position),
+      cachedAt: Value(cachedAt),
+    );
+  }
+
+  factory CachedRecipeFeedEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CachedRecipeFeedEntry(
+      feedKey: serializer.fromJson<String>(json['feedKey']),
+      recipeId: serializer.fromJson<String>(json['recipeId']),
+      page: serializer.fromJson<int>(json['page']),
+      position: serializer.fromJson<int>(json['position']),
+      cachedAt: serializer.fromJson<DateTime>(json['cachedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'feedKey': serializer.toJson<String>(feedKey),
+      'recipeId': serializer.toJson<String>(recipeId),
+      'page': serializer.toJson<int>(page),
+      'position': serializer.toJson<int>(position),
+      'cachedAt': serializer.toJson<DateTime>(cachedAt),
+    };
+  }
+
+  CachedRecipeFeedEntry copyWith({
+    String? feedKey,
+    String? recipeId,
+    int? page,
+    int? position,
+    DateTime? cachedAt,
+  }) => CachedRecipeFeedEntry(
+    feedKey: feedKey ?? this.feedKey,
+    recipeId: recipeId ?? this.recipeId,
+    page: page ?? this.page,
+    position: position ?? this.position,
+    cachedAt: cachedAt ?? this.cachedAt,
+  );
+  CachedRecipeFeedEntry copyWithCompanion(
+    CachedRecipeFeedEntriesCompanion data,
+  ) {
+    return CachedRecipeFeedEntry(
+      feedKey: data.feedKey.present ? data.feedKey.value : this.feedKey,
+      recipeId: data.recipeId.present ? data.recipeId.value : this.recipeId,
+      page: data.page.present ? data.page.value : this.page,
+      position: data.position.present ? data.position.value : this.position,
+      cachedAt: data.cachedAt.present ? data.cachedAt.value : this.cachedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CachedRecipeFeedEntry(')
+          ..write('feedKey: $feedKey, ')
+          ..write('recipeId: $recipeId, ')
+          ..write('page: $page, ')
+          ..write('position: $position, ')
+          ..write('cachedAt: $cachedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(feedKey, recipeId, page, position, cachedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CachedRecipeFeedEntry &&
+          other.feedKey == this.feedKey &&
+          other.recipeId == this.recipeId &&
+          other.page == this.page &&
+          other.position == this.position &&
+          other.cachedAt == this.cachedAt);
+}
+
+class CachedRecipeFeedEntriesCompanion
+    extends UpdateCompanion<CachedRecipeFeedEntry> {
+  final Value<String> feedKey;
+  final Value<String> recipeId;
+  final Value<int> page;
+  final Value<int> position;
+  final Value<DateTime> cachedAt;
+  final Value<int> rowid;
+  const CachedRecipeFeedEntriesCompanion({
+    this.feedKey = const Value.absent(),
+    this.recipeId = const Value.absent(),
+    this.page = const Value.absent(),
+    this.position = const Value.absent(),
+    this.cachedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CachedRecipeFeedEntriesCompanion.insert({
+    required String feedKey,
+    required String recipeId,
+    required int page,
+    required int position,
+    required DateTime cachedAt,
+    this.rowid = const Value.absent(),
+  }) : feedKey = Value(feedKey),
+       recipeId = Value(recipeId),
+       page = Value(page),
+       position = Value(position),
+       cachedAt = Value(cachedAt);
+  static Insertable<CachedRecipeFeedEntry> custom({
+    Expression<String>? feedKey,
+    Expression<String>? recipeId,
+    Expression<int>? page,
+    Expression<int>? position,
+    Expression<DateTime>? cachedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (feedKey != null) 'feed_key': feedKey,
+      if (recipeId != null) 'recipe_id': recipeId,
+      if (page != null) 'page': page,
+      if (position != null) 'position': position,
+      if (cachedAt != null) 'cached_at': cachedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CachedRecipeFeedEntriesCompanion copyWith({
+    Value<String>? feedKey,
+    Value<String>? recipeId,
+    Value<int>? page,
+    Value<int>? position,
+    Value<DateTime>? cachedAt,
+    Value<int>? rowid,
+  }) {
+    return CachedRecipeFeedEntriesCompanion(
+      feedKey: feedKey ?? this.feedKey,
+      recipeId: recipeId ?? this.recipeId,
+      page: page ?? this.page,
+      position: position ?? this.position,
+      cachedAt: cachedAt ?? this.cachedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (feedKey.present) {
+      map['feed_key'] = Variable<String>(feedKey.value);
+    }
+    if (recipeId.present) {
+      map['recipe_id'] = Variable<String>(recipeId.value);
+    }
+    if (page.present) {
+      map['page'] = Variable<int>(page.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (cachedAt.present) {
+      map['cached_at'] = Variable<DateTime>(cachedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CachedRecipeFeedEntriesCompanion(')
+          ..write('feedKey: $feedKey, ')
+          ..write('recipeId: $recipeId, ')
+          ..write('page: $page, ')
+          ..write('position: $position, ')
+          ..write('cachedAt: $cachedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $CachedRecipesTable cachedRecipes = $CachedRecipesTable(this);
+  late final $CachedRecipeFeedEntriesTable cachedRecipeFeedEntries =
+      $CachedRecipeFeedEntriesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [cachedRecipes];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    cachedRecipes,
+    cachedRecipeFeedEntries,
+  ];
 }
 
 typedef $$CachedRecipesTableCreateCompanionBuilder =
@@ -718,6 +1095,40 @@ typedef $$CachedRecipesTableUpdateCompanionBuilder =
       Value<DateTime> cachedAt,
       Value<int> rowid,
     });
+
+final class $$CachedRecipesTableReferences
+    extends BaseReferences<_$AppDatabase, $CachedRecipesTable, CachedRecipe> {
+  $$CachedRecipesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<
+    $CachedRecipeFeedEntriesTable,
+    List<CachedRecipeFeedEntry>
+  >
+  _cachedRecipeFeedEntriesRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.cachedRecipeFeedEntries,
+        aliasName: 'cached_recipes__id__cached_recipe_feed_entries__recipe_id',
+      );
+
+  $$CachedRecipeFeedEntriesTableProcessedTableManager
+  get cachedRecipeFeedEntriesRefs {
+    final manager = $$CachedRecipeFeedEntriesTableTableManager(
+      $_db,
+      $_db.cachedRecipeFeedEntries,
+    ).filter((f) => f.recipeId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _cachedRecipeFeedEntriesRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
 
 class $$CachedRecipesTableFilterComposer
     extends Composer<_$AppDatabase, $CachedRecipesTable> {
@@ -782,6 +1193,32 @@ class $$CachedRecipesTableFilterComposer
     column: $table.cachedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> cachedRecipeFeedEntriesRefs(
+    Expression<bool> Function($$CachedRecipeFeedEntriesTableFilterComposer f) f,
+  ) {
+    final $$CachedRecipeFeedEntriesTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.cachedRecipeFeedEntries,
+          getReferencedColumn: (t) => t.recipeId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CachedRecipeFeedEntriesTableFilterComposer(
+                $db: $db,
+                $table: $db.cachedRecipeFeedEntries,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$CachedRecipesTableOrderingComposer
@@ -900,6 +1337,33 @@ class $$CachedRecipesTableAnnotationComposer
 
   GeneratedColumn<DateTime> get cachedAt =>
       $composableBuilder(column: $table.cachedAt, builder: (column) => column);
+
+  Expression<T> cachedRecipeFeedEntriesRefs<T extends Object>(
+    Expression<T> Function($$CachedRecipeFeedEntriesTableAnnotationComposer a)
+    f,
+  ) {
+    final $$CachedRecipeFeedEntriesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.cachedRecipeFeedEntries,
+          getReferencedColumn: (t) => t.recipeId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CachedRecipeFeedEntriesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.cachedRecipeFeedEntries,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$CachedRecipesTableTableManager
@@ -913,12 +1377,9 @@ class $$CachedRecipesTableTableManager
           $$CachedRecipesTableAnnotationComposer,
           $$CachedRecipesTableCreateCompanionBuilder,
           $$CachedRecipesTableUpdateCompanionBuilder,
-          (
-            CachedRecipe,
-            BaseReferences<_$AppDatabase, $CachedRecipesTable, CachedRecipe>,
-          ),
+          (CachedRecipe, $$CachedRecipesTableReferences),
           CachedRecipe,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool cachedRecipeFeedEntriesRefs})
         > {
   $$CachedRecipesTableTableManager(_$AppDatabase db, $CachedRecipesTable table)
     : super(
@@ -991,15 +1452,42 @@ class $$CachedRecipesTableTableManager
               .map(
                 (e) => (
                   e.readTable<$CachedRecipesTable, CachedRecipe>(table),
-                  BaseReferences<
-                    _$AppDatabase,
-                    $CachedRecipesTable,
-                    CachedRecipe
-                  >(db, table, e),
+                  $$CachedRecipesTableReferences(db, table, e),
                 ),
               )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({cachedRecipeFeedEntriesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (cachedRecipeFeedEntriesRefs) db.cachedRecipeFeedEntries,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (cachedRecipeFeedEntriesRefs)
+                    await $_getPrefetchedData<
+                      CachedRecipe,
+                      $CachedRecipesTable,
+                      CachedRecipeFeedEntry
+                    >(
+                      currentTable: table,
+                      referencedTable: $$CachedRecipesTableReferences
+                          ._cachedRecipeFeedEntriesRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$CachedRecipesTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).cachedRecipeFeedEntriesRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.recipeId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -1014,12 +1502,350 @@ typedef $$CachedRecipesTableProcessedTableManager =
       $$CachedRecipesTableAnnotationComposer,
       $$CachedRecipesTableCreateCompanionBuilder,
       $$CachedRecipesTableUpdateCompanionBuilder,
-      (
-        CachedRecipe,
-        BaseReferences<_$AppDatabase, $CachedRecipesTable, CachedRecipe>,
-      ),
+      (CachedRecipe, $$CachedRecipesTableReferences),
       CachedRecipe,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool cachedRecipeFeedEntriesRefs})
+    >;
+typedef $$CachedRecipeFeedEntriesTableCreateCompanionBuilder =
+    CachedRecipeFeedEntriesCompanion Function({
+      required String feedKey,
+      required String recipeId,
+      required int page,
+      required int position,
+      required DateTime cachedAt,
+      Value<int> rowid,
+    });
+typedef $$CachedRecipeFeedEntriesTableUpdateCompanionBuilder =
+    CachedRecipeFeedEntriesCompanion Function({
+      Value<String> feedKey,
+      Value<String> recipeId,
+      Value<int> page,
+      Value<int> position,
+      Value<DateTime> cachedAt,
+      Value<int> rowid,
+    });
+
+final class $$CachedRecipeFeedEntriesTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $CachedRecipeFeedEntriesTable,
+          CachedRecipeFeedEntry
+        > {
+  $$CachedRecipeFeedEntriesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $CachedRecipesTable _recipeIdTable(_$AppDatabase db) => db
+      .cachedRecipes
+      .createAlias('cached_recipe_feed_entries__recipe_id__cached_recipes__id');
+
+  $$CachedRecipesTableProcessedTableManager get recipeId {
+    final $_column = $_itemColumn<String>('recipe_id')!;
+
+    final manager = $$CachedRecipesTableTableManager(
+      $_db,
+      $_db.cachedRecipes,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_recipeIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$CachedRecipeFeedEntriesTableFilterComposer
+    extends Composer<_$AppDatabase, $CachedRecipeFeedEntriesTable> {
+  $$CachedRecipeFeedEntriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get feedKey => $composableBuilder(
+    column: $table.feedKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get page => $composableBuilder(
+    column: $table.page,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get cachedAt => $composableBuilder(
+    column: $table.cachedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$CachedRecipesTableFilterComposer get recipeId {
+    final $$CachedRecipesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.recipeId,
+      referencedTable: $db.cachedRecipes,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CachedRecipesTableFilterComposer(
+            $db: $db,
+            $table: $db.cachedRecipes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CachedRecipeFeedEntriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $CachedRecipeFeedEntriesTable> {
+  $$CachedRecipeFeedEntriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get feedKey => $composableBuilder(
+    column: $table.feedKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get page => $composableBuilder(
+    column: $table.page,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get cachedAt => $composableBuilder(
+    column: $table.cachedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$CachedRecipesTableOrderingComposer get recipeId {
+    final $$CachedRecipesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.recipeId,
+      referencedTable: $db.cachedRecipes,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CachedRecipesTableOrderingComposer(
+            $db: $db,
+            $table: $db.cachedRecipes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CachedRecipeFeedEntriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CachedRecipeFeedEntriesTable> {
+  $$CachedRecipeFeedEntriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get feedKey =>
+      $composableBuilder(column: $table.feedKey, builder: (column) => column);
+
+  GeneratedColumn<int> get page =>
+      $composableBuilder(column: $table.page, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get cachedAt =>
+      $composableBuilder(column: $table.cachedAt, builder: (column) => column);
+
+  $$CachedRecipesTableAnnotationComposer get recipeId {
+    final $$CachedRecipesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.recipeId,
+      referencedTable: $db.cachedRecipes,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CachedRecipesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.cachedRecipes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CachedRecipeFeedEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CachedRecipeFeedEntriesTable,
+          CachedRecipeFeedEntry,
+          $$CachedRecipeFeedEntriesTableFilterComposer,
+          $$CachedRecipeFeedEntriesTableOrderingComposer,
+          $$CachedRecipeFeedEntriesTableAnnotationComposer,
+          $$CachedRecipeFeedEntriesTableCreateCompanionBuilder,
+          $$CachedRecipeFeedEntriesTableUpdateCompanionBuilder,
+          (CachedRecipeFeedEntry, $$CachedRecipeFeedEntriesTableReferences),
+          CachedRecipeFeedEntry,
+          PrefetchHooks Function({bool recipeId})
+        > {
+  $$CachedRecipeFeedEntriesTableTableManager(
+    _$AppDatabase db,
+    $CachedRecipeFeedEntriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CachedRecipeFeedEntriesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$CachedRecipeFeedEntriesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$CachedRecipeFeedEntriesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> feedKey = const Value.absent(),
+                Value<String> recipeId = const Value.absent(),
+                Value<int> page = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<DateTime> cachedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CachedRecipeFeedEntriesCompanion(
+                feedKey: feedKey,
+                recipeId: recipeId,
+                page: page,
+                position: position,
+                cachedAt: cachedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String feedKey,
+                required String recipeId,
+                required int page,
+                required int position,
+                required DateTime cachedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CachedRecipeFeedEntriesCompanion.insert(
+                feedKey: feedKey,
+                recipeId: recipeId,
+                page: page,
+                position: position,
+                cachedAt: cachedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $CachedRecipeFeedEntriesTable,
+                    CachedRecipeFeedEntry
+                  >(table),
+                  $$CachedRecipeFeedEntriesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({recipeId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (recipeId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.recipeId,
+                        referencedTable:
+                            $$CachedRecipeFeedEntriesTableReferences
+                                ._recipeIdTable(db),
+                        referencedColumn:
+                            $$CachedRecipeFeedEntriesTableReferences
+                                ._recipeIdTable(db)
+                                .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CachedRecipeFeedEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CachedRecipeFeedEntriesTable,
+      CachedRecipeFeedEntry,
+      $$CachedRecipeFeedEntriesTableFilterComposer,
+      $$CachedRecipeFeedEntriesTableOrderingComposer,
+      $$CachedRecipeFeedEntriesTableAnnotationComposer,
+      $$CachedRecipeFeedEntriesTableCreateCompanionBuilder,
+      $$CachedRecipeFeedEntriesTableUpdateCompanionBuilder,
+      (CachedRecipeFeedEntry, $$CachedRecipeFeedEntriesTableReferences),
+      CachedRecipeFeedEntry,
+      PrefetchHooks Function({bool recipeId})
     >;
 
 class $AppDatabaseManager {
@@ -1027,4 +1853,9 @@ class $AppDatabaseManager {
   $AppDatabaseManager(this._db);
   $$CachedRecipesTableTableManager get cachedRecipes =>
       $$CachedRecipesTableTableManager(_db, _db.cachedRecipes);
+  $$CachedRecipeFeedEntriesTableTableManager get cachedRecipeFeedEntries =>
+      $$CachedRecipeFeedEntriesTableTableManager(
+        _db,
+        _db.cachedRecipeFeedEntries,
+      );
 }
